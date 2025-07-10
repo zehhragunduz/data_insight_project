@@ -1,1 +1,2 @@
+data_insight_project/data_insight_project/db.sqlite3 filter=lfs diff=lfs merge=lfs -text
 db.sqlite3 filter=lfs diff=lfs merge=lfs -text
