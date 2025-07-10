@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+body {
+  background: transparent !important;
+  font-family: 'Inter', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
+  padding-top: 70px;
+}
+.back-arrow-standalone {
+  display: flex;
+  align-items: center;
+  margin: 18px 0 0 0;
+  margin-left: 0;
+  width: fit-content;
+  cursor: pointer;
+  color: #0dcaf0;
+  font-size: 1.7rem;
+  transition: color 0.2s;
+  z-index: 10;
+}
+.back-arrow-standalone:hover {
+  color: #0099cc;
+}
+.form-container {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 15px;
+  padding: 30px 40px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  margin: 40px auto 0 auto;
+  margin-top: 30px;
+}
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  margin-bottom: 2rem;
+}
+.navbar .btn {
+  min-width: 110px;
+  min-height: 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  padding: 0.5rem 1.2rem;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+.login-title {
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-weight: bold;
+}
+.login-input:focus, .login-input:hover {
+  border-color: #00c6ff !important;
+  box-shadow: 0 0 0 0.15rem rgba(0,198,255,0.18);
+}
+</style>
+{% endblock %}
+{% block content %}
+<span class="back-arrow-standalone" onclick="window.history.back()">
+  <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 22l-7-7 7-7" stroke="#0dcaf0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</span>
+<div class="form-container">
+  <div class="login-header">
+    
+    <h3 class="fw-bold mb-0 ms-2 login-title">Giriş Yap</h3>
+  </div>
+  <form method="post" autocomplete="off">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_username" class="form-label">Kullanıcı Adı</label>
+      <input type="text" name="username" class="form-control login-input" id="id_username" required>
+      {% if form.username.errors %}
+        <ul class="errorlist">{{ form.username.errors }}</ul>
+      {% endif %}
+    </div>
+    <div class="mb-3">
+      <label for="id_password" class="form-label">Parola</label>
+      <input type="password" name="password" class="form-control login-input" id="id_password" required>
+      {% if form.password.errors %}
+        <ul class="errorlist">{{ form.password.errors }}</ul>
+      {% endif %}
+    </div>
+    <button type="submit" class="btn btn-gradient w-100 mt-2">Giriş Yap</button>
+  </form>
+  <div class="text-center mt-3">
+    <span><span style="font-size:1.1em;vertical-align:middle;">🔗</span> Hesabın yok mu? 
+      <a href="{% url 'analyzer:register' %}" style="color:#0dcaf0;"><i class="fa fa-user-plus me-1"></i>Kayıt Ol</a>
+    </span>
+  </div>
+</div>
+{% endblock %}

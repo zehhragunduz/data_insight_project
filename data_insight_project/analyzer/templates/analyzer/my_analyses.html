@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+{% load static %}
+{% load analyzer_filters %}
+{% block content %}
+<style>
+.table-modern {
+    border-collapse: separate;
+    border-spacing: 0 14px;
+    background: transparent;
+}
+.table-modern thead th {
+    background: #181c24;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    border-radius: 18px 18px 0 0;
+}
+.table-modern tbody tr {
+    background: #23272b;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(22,36,71,0.13);
+    transition: box-shadow 0.2s, background 0.2s;
+}
+.table-modern tbody tr:nth-child(even) {
+    background: #151d2b;
+}
+.table-modern tbody tr:hover {
+    background: #2a2f38;
+    box-shadow: 0 4px 18px rgba(22,36,71,0.18);
+}
+.table-modern td, .table-modern th {
+    border: none;
+    vertical-align: middle;
+    border-radius: 18px;
+    background: inherit;
+}
+.stat-card {
+    background: linear-gradient(135deg, #23272b 60%, #181c24 100%);
+    color: #fff;
+    border-radius: 18px;
+    border: 1.5px solid #23272b;
+    box-shadow: 0 2px 8px rgba(22,36,71,0.10);
+    transition: transform 0.15s, box-shadow 0.15s, border 0.15s;
+}
+.stat-card:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 4px 18px rgba(22,36,71,0.18);
+    border-color: #0d6efd;
+}
+.btn-modern {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin: 0 4px;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s, border 0.18s, filter 0.18s;
+    border: none;
+    background: #23272b;
+    color: #bfc9da;
+    box-shadow: 0 2px 8px rgba(22,36,71,0.13);
+    filter: drop-shadow(0 2px 6px rgba(22,36,71,0.10));
+}
+.btn-modern i {
+    filter: drop-shadow(0 1px 2px #0008);
+}
+.btn-modern:hover {
+    background: #0d6efd;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(13,110,253,0.18);
+    border: 1.5px solid #0d6efd;
+    filter: brightness(1.08);
+}
+.btn-modern.btn-danger:hover {
+    background: #dc3545;
+    color: #fff;
+    border: 1.5px solid #dc3545;
+}
+.btn-modern.btn-success:hover {
+    background: #198754;
+    color: #fff;
+    border: 1.5px solid #198754;
+}
+.btn-modern.btn-secondary:hover {
+    background: #6c757d;
+    color: #fff;
+    border: 1.5px solid #6c757d;
+}
+.metric-badge {
+    display: inline-block;
+    min-width: 60px;
+    padding: 0.35em 0.7em;
+    font-size: 1em;
+    font-weight: 500;
+    border-radius: 1.2em;
+    margin: 0 4px 4px 0;
+    color: #fff;
+    background: #23272b;
+    transition: background 0.18s;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.10);
+}
+.metric-badge.green { background: #198754; }
+.metric-badge.yellow { background: #ffc107; color: #222; }
+.metric-badge.red { background: #dc3545; }
+.metric-badge:hover { filter: brightness(1.08); }
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #23395d;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    border: 2px solid #23272b;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.10);
+}
+.avatar-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #23272b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    border: 2px solid #23272b;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.10);
+}
+/* Modal detay güzelleştirme */
+.details-modal-gradient {
+    background: linear-gradient(135deg, #181c24 70%, #23272b 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 32px rgba(22,36,71,0.18);
+    border: 1.5px solid #23272b;
+    padding: 24px 18px;
+}
+.details-modal-gradient h5 {
+    font-weight: 700;
+    color: #0d6efd;
+    letter-spacing: 1px;
+}
+.details-modal-gradient .modal-section {
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    background: rgba(35,39,43,0.18);
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.08);
+}
+.details-modal-gradient .modal-section b {
+    color: #fff;
+}
+.table-modern thead th, .table-modern tbody td {
+    color: #f3f4f6;
+}
+</style>
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-4 mb-2">
+            <div class="stat-card p-3 text-center">
+                <div class="fw-bold" style="font-size:1.5rem;">{{ total_count }}</div>
+                <div class="small">Toplam Analiz</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-2">
+            <div class="stat-card p-3 text-center">
+                <div class="fw-bold" style="font-size:1.5rem;">{{ public_count }}</div>
+                <div class="small">Public Analiz</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-2">
+            <div class="stat-card p-3 text-center">
+                <div class="fw-bold" style="font-size:1.5rem;">{{ private_count }}</div>
+                <div class="small">Private Analiz</div>
+            </div>
+        </div>
+    </div>
+    {% if page_obj %}
+        <div class="table-responsive">
+        <table class="table table-modern align-middle" style="min-width:700px;">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th>Kullanıcı</th>
+                    <th>Tarih</th>
+                    <th>Hedef</th>
+                    <th>Model</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in page_obj %}
+                <tr>
+                    <td class="text-truncate" style="max-width:180px;">{{ analysis.title|default:"Başlık Yok" }}</td>
+                    <td class="text-truncate" style="max-width:120px;">
+                        <div class="avatar-circle">{{ analysis.owner.username|first|upper }}</div>
+                        {{ analysis.owner.username }}
+                    </td>
+                    <td class="text-truncate" style="max-width:120px;"><i class="fa-solid fa-calendar-days me-1"></i> {{ analysis.created_at|date:'d.m.Y H:i' }}</td>
+                    <td class="text-truncate" style="max-width:120px;">{% if analysis.details.target_column %}{{ analysis.details.target_column }}{% else %}-{% endif %}</td>
+                    <td class="text-truncate" style="max-width:120px;">{% if analysis.details.model_type %}{{ analysis.details.model_type }}{% else %}-{% endif %}</td>
+                    <td><span class="badge bg-{{ analysis.is_public|yesno:'success,secondary' }}">{{ analysis.is_public|yesno:"Genel,Özel" }}</span></td>
+                    <td>
+                        <button class="btn-modern btn-secondary" onclick="showDetailsModal({{ analysis.id }})" title="Detayları Göster"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <a href="{% url 'analyzer:edit_analysis' analysis.id %}" class="btn-modern btn-primary" title="Düzenle"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <button class="btn-modern btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ analysis.id }}" title="Sil"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>
+                <!-- Detay Modalı -->
+                <div class="modal fade" id="detailsModal{{ analysis.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ analysis.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content details-modal-gradient text-light">
+                      <div class="modal-header border-secondary">
+                        <h5 class="modal-title d-flex align-items-center gap-2" id="detailsModalLabel{{ analysis.id }}">
+                            <i class="fa-solid fa-chart-simple"></i> Analiz Detayları
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="modal-section"><b>Başlık:</b> {{ analysis.title|default:"Başlık Yok" }}</div>
+                        {% if analysis.summary %}
+                            <div class="modal-section"><b>Özet:</b> {{ analysis.summary }}</div>
+                        {% endif %}
+                        {% if analysis.details.short_summary %}
+                            <div class="modal-section"><b>Kısa Özet:</b> {{ analysis.details.short_summary }}</div>
+                        {% endif %}
+                        {% if analysis.details.summary %}
+                            <div class="modal-section"><b>Detaylı Özet:</b>
+                                <div class="small" style="white-space:pre-wrap;">{{ analysis.details.summary|safe }}</div>
+                            </div>
+                        {% endif %}
+                        {% if analysis.details.model_metrics %}
+                            <div class="modal-section"><b>Model Metrikleri:</b><br>
+                                {% for metric_name, metric_value in analysis.details.model_metrics.items %}
+                                    {% if metric_value > 0.85 %}
+                                        <span class="metric-badge green">{{ metric_name|title }}: {{ metric_value|floatformat:3 }}</span>
+                                    {% elif metric_value > 0.7 %}
+                                        <span class="metric-badge yellow">{{ metric_name|title }}: {{ metric_value|floatformat:3 }}</span>
+                                    {% else %}
+                                        <span class="metric-badge red">{{ metric_name|title }}: {{ metric_value|floatformat:3 }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if analysis.details.preprocessing_info %}
+                            <div class="modal-section"><b>Ön İşleme Bilgileri:</b>
+                                <ul class="mb-2">
+                                    {% for key, value in analysis.details.preprocessing_info.items %}
+                                        <li><b>{{ key|title }}:</b> {% if value|is_dict %}<ul>{% for k, v in value.items %}<li>{{ k }}: {{ v }}</li>{% endfor %}</ul>{% else %}{{ value }}{% endif %}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        {% if analysis.details.plots %}
+                            <div class="modal-section"><b>Analiz Grafikleri:</b>
+                                <div class="row">
+                                    {% for name, img in analysis.details.plots.items %}
+                                        <div class="col-md-6 mb-2">
+                                            <div>
+                                                <div class="mb-1"><b>{{ name|title|replace_underscore_with_space }}</b></div>
+                                                <img src="data:image/png;base64,{{ img }}" alt="{{ name }}" style="max-width:100%; max-height:220px; object-fit:contain; border-radius:10px; box-shadow:0 1px 6px rgba(22,36,71,0.10);">
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if not analysis.summary and not analysis.details.short_summary and not analysis.details.summary and not analysis.details.model_metrics and not analysis.details.preprocessing_info and not analysis.details.plots %}
+                            <span class="text-muted">Detaylı bilgi bulunmamaktadır.</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Silme Modal -->
+                <div class="modal fade" id="deleteModal{{ analysis.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ analysis.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-dark" id="deleteModalLabel{{ analysis.id }}">Analizi Sil</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                            </div>
+                            <div class="modal-body text-dark">
+                                <p><strong>{{ analysis.title }}</strong> adlı analizi silmek istediğinize emin misiniz?</p>
+                                <p class="text-muted small">Bu işlem geri alınamaz.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                                <button class="btn btn-danger" type="button" onclick="deleteAnalysis({{ analysis.id }})">Evet, Sil</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <!-- Sayfalama barı -->
+        <nav aria-label="Analiz sayfalama" class="mt-3">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Önceki">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Sonraki">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <!-- İstatistikler -->
+        {# Bu kısmı tamamen kaldırıyorum #}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">Henüz Hiç Analiz Yapmadın</h4>
+            <p class="text-muted">İlk analizini yapmak için veri yüklemeye başla!</p>
+            <a href="{% url 'analyzer:upload' %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Veri Yükle ve Analiz Et
+            </a>
+        </div>
+    {% endif %}
+</div>
+<script>
+function showDetailsModal(analysisId) {
+    var modal = new bootstrap.Modal(document.getElementById('detailsModal' + analysisId));
+    modal.show();
+    setTimeout(function() {
+        document.getElementById('detailsModal' + analysisId).scrollIntoView({behavior: 'smooth', block: 'center'});
+    }, 250);
+}
+function deleteAnalysis(analysisId) {
+    const csrftoken = document.querySelector('[name=csrf-token]')
+        ? document.querySelector('[name=csrf-token]').content
+        : document.querySelector('input[name=csrfmiddlewaretoken]')
+            ? document.querySelector('input[name=csrfmiddlewaretoken]').value
+            : '';
+    fetch("{% url 'analyzer:delete_analysis' 0 %}".replace('0', analysisId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            var modalElement = document.getElementById('deleteModal' + analysisId);
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                document.activeElement.blur();
+                modal.hide();
+            }
+            setTimeout(function() {
+                var row = document.getElementById('analysis-card-' + analysisId);
+                if (row) row.remove();
+            }, 300);
+        } else if (response.status === 404) {
+            alert("Analiz bulunamadı veya zaten silinmiş.");
+            var row = document.getElementById('analysis-card-' + analysisId);
+            if (row) row.remove();
+        } else {
+            alert("Silme işlemi başarısız oldu.");
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% load analyzer_filters %}
+{% block content %}
+
+<style>
+.analysis-detail-bg {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+}
+.analysis-detail-content {
+    background: rgba(255,255,255,0.13);
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 36px 32px;
+    max-width: 900px;
+    width: 100%;
+    color: #fff;
+    z-index: 3;
+}
+.analysis-detail-bg-video {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    object-fit: cover;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.85;
+}
+.analysis-faq-box {
+    background: #181c24;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(31,38,135,0.18);
+    padding: 32px 24px;
+    margin: 48px auto 32px auto;
+    max-width: 900px;
+    color: #fff;
+    z-index: 4;
+}
+</style>
+<!-- Arka Plan Video kaldırıldı -->
+<div class="analysis-detail-bg">
+    <div class="analysis-detail-content">
+        <h2 style="font-size:2.2rem; font-weight:700; text-shadow:0 2px 8px #222;">{{ analysis.title }}</h2>
+        <p style="font-size:1.1rem;"><strong>Özet:</strong> {{ analysis.summary }}</p>
+        <p><strong>Aşkan:</strong> {{ analysis.owner.username }}</p>
+        <p><strong>Gizlilik:</strong> {{ analysis.is_public|yesno:"Genel,Özel" }}</p>
+
+        {% if user.is_authenticated and analysis.is_public %}
+          <button onclick="toggleFavorite({{ analysis.id }})" id="fav-btn-{{ analysis.id }}" class="btn btn-warning mb-3">
+            {% if user in analysis.favorited_by.all %}
+              ★ Favori
+            {% else %}
+              ☆ Favorile
+            {% endif %}
+          </button>
+        {% endif %}
+
+        <hr>
+        
+        {% if metrics %}
+          <h4>Model Metrikleri</h4>
+          <ul>
+            {% for key, value in metrics.items %}
+              <li><strong>{{ key|capfirst }}:</strong> {{ value }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if plots %}
+          <h4>Analiz Grafik(ler)i</h4>
+          <div class="row">
+            {% for name, img in plots.items %}
+              <div class="col-md-4 mb-3">
+                <div class="card">
+                  <div class="card-header">{{ name|title|replace_underscore_with_space }}</div>
+                  <img src="data:image/png;base64,{{ img }}"
+                       class="card-img-top plot-img"
+                       alt="{{ name }}"
+                       style="cursor:pointer;"
+                       data-plot-name="{{ name }}"
+                       data-plot-src="data:image/png;base64,{{ img }}">
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if user.is_authenticated and analysis.is_public %}
+<script>
+function toggleFavorite(analysisId) {
+    fetch("{% url 'analyzer:toggle_favorite' 0 %}".replace('0', analysisId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const btn = document.getElementById('fav-btn-' + analysisId);
+        if (data.favorited) {
+            btn.innerText = "★ Favori";
+        } else {
+            btn.innerText = "☆ Favorile";
+        }
+    });
+}
+</script>
+{% endif %}
+
+<!-- Grafik Büyütme ve İndirme Modalı -->
+<div class="modal fade" id="plotModal" tabindex="-1" aria-labelledby="plotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="plotModalLabel">Grafik</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalPlotImg" src="" alt="Büyük Grafik" style="max-width:100%; max-height:70vh; border-radius:12px;">
+      </div>
+      <div class="modal-footer">
+        <a id="downloadPlotBtn" href="#" download="grafik.png" class="btn btn-success">İndir</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.plot-img').forEach(function(img) {
+    img.addEventListener('click', function() {
+      var src = this.getAttribute('data-plot-src');
+      var name = this.getAttribute('data-plot-name');
+      document.getElementById('modalPlotImg').src = src;
+      document.getElementById('plotModalLabel').innerText = name;
+      document.getElementById('downloadPlotBtn').href = src;
+      document.getElementById('downloadPlotBtn').download = name + ".png";
+      var modal = new bootstrap.Modal(document.getElementById('plotModal'));
+      modal.show();
+    });
+  });
+});
+</script>
+<div class="card glass-card p-4 mb-4">
+    {% include "analyzer/faq.html" %}
+</div>
+{% endblock %}

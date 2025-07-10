@@ -1,0 +1,971 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load analyzer_filters %}
+<!-- Google Fonts: Poppins -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- AOS CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  body, .container, .row, .col-md-12 {
+    font-family: 'Poppins', Arial, sans-serif !important;
+  }
+  .modern-section {
+    background: rgba(44,54,74,0.88);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(56,198,255,0.10), 0 1.5px 8px #232c3d44;
+    padding: 2.2rem 2rem 2rem 2rem;
+    margin-bottom: 2.8rem;
+    color: #e0f7ff;
+    border: 1.5px solid #232c3d;
+  }
+  .modern-section h4, .modern-section h3, .modern-section h5 {
+    color: #38c6ff;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .modern-btn {
+    background: linear-gradient(90deg, #38c6ff 0%, #6c63ff 100%);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.7em 2.2em;
+    font-size: 1.13rem;
+    transition: background 0.3s, color 0.3s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 12px #38c6ff22;
+  }
+  .modern-btn:hover {
+    background: linear-gradient(90deg, #6c63ff 0%, #38c6ff 100%);
+    color: #fff;
+    box-shadow: 0 6px 24px #6c63ff33;
+    transform: scale(1.04);
+  }
+  .select2-container--default .select2-selection--single {
+    background: #232c3d;
+    color: #e0f7ff;
+    border: 1.5px solid #38c6ff55;
+    border-radius: 8px;
+    padding: 0.6em 1em;
+    font-size: 1.08em;
+    min-height: 44px;
+  }
+  .modern-plot-card {
+    background: rgba(24,31,42,0.92);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #38c6ff22;
+    padding: 1.2rem 1rem 1.2rem 1rem;
+    border: 1.2px solid #232c3d;
+    transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+    margin-bottom: 1.2rem;
+  }
+  .modern-plot-card:hover {
+    transform: scale(1.045);
+    box-shadow: 0 8px 32px #38c6ff33;
+    z-index: 2;
+  }
+  .modern-plot-desc {
+    color: #38c6ff;
+    font-size: 1.01rem;
+    text-align: center;
+    margin-top: 0.7rem;
+    font-weight: 500;
+  }
+  .modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(30,36,48,0.98);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px #232c3d33;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: transform 0.22s cubic-bezier(.4,2,.6,1), box-shadow 0.22s;
+    border: 1.5px solid #232c3d;
+  }
+  .modern-table th, .modern-table td {
+    vertical-align: middle !important;
+  }
+  .modern-table .checkbox-cell {
+    width: 44px;
+    text-align: center;
+  }
+  .modern-table .icon-cell {
+    width: 48px;
+    text-align: center;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+  .modern-table th, .modern-table td {
+    padding: 1.5em 2em;
+    font-size: 1.09em;
+  }
+  .modern-table .modern-badge {
+    display: inline-block;
+    background: #38c6ff22;
+    color: #38c6ff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.25em 1.1em;
+    font-size: 1em;
+    cursor: pointer;
+    border: 1.2px solid #38c6ff55;
+    transition: background 0.18s, color 0.18s;
+  }
+  .modern-table .modern-badge.inactive {
+    background: #ff4d4d22;
+    color: #ff4d4d;
+    border: 1.2px solid #ff4d4d55;
+  }
+  .modern-table .modern-badge:hover {
+    background: #38c6ff;
+    color: #fff;
+  }
+  .modern-table .modern-badge.inactive:hover {
+    background: #ff4d4d;
+    color: #fff;
+  }
+  .modern-table thead tr {
+    background: linear-gradient(90deg, #38c6ff 0%, #6c63ff 100%);
+  }
+  .modern-table thead th {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.18em;
+    padding: 1.15em 1.1em;
+    border: none;
+    letter-spacing: 0.01em;
+    background: linear-gradient(90deg, #38c6ff 0%, #6c63ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+  .modern-table tbody tr {
+    background: rgba(44,54,74,0.92);
+    transition: background 0.18s, transform 0.18s;
+    border-bottom: 1.5px solid rgba(56,198,255,0.10);
+    box-shadow: 0 1px 6px 0 rgba(56,198,255,0.04);
+  }
+  .modern-table tbody tr:hover {
+    background: rgba(56,198,255,0.18);
+    transform: translateY(-4px) scale(1.018);
+    box-shadow: 0 4px 18px #38c6ff33;
+  }
+  .modern-table td {
+    color: #e0f7ff;
+    font-size: 1.04em;
+    padding: 0.85em 1.1em;
+    border: none;
+    vertical-align: middle;
+  }
+  .modern-table ul {
+    margin-bottom: 0;
+  }
+  .modern-table .progress {
+    background: #232c3d;
+    border-radius: 8px;
+    height: 1.1rem;
+    overflow: hidden;
+  }
+  .modern-table .progress-bar {
+    border-radius: 8px;
+  }
+  .modern-table .progress-text {
+    color: #fff;
+    font-size: 0.98em;
+    font-weight: 500;
+  }
+  .modern-badge {
+    display: inline-block;
+    background: #38c6ff22;
+    color: #38c6ff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.25em 1.1em;
+    font-size: 1em;
+    cursor: pointer;
+    border: 1.2px solid #38c6ff55;
+    transition: background 0.18s, color 0.18s;
+  }
+  .modern-badge:hover {
+    background: #38c6ff;
+    color: #fff;
+  }
+  .modern-table-row-details {
+    background: rgba(44,54,74,0.98);
+    color: #e0f7ff;
+    font-size: 1em;
+    border-bottom: 1.5px solid rgba(56,198,255,0.10);
+    box-shadow: 0 1px 6px 0 rgba(56,198,255,0.04);
+    transition: all 0.18s;
+  }
+  .select2-container--default .select2-selection--single.select2-modern {
+    background: #232c3d;
+    color: #e0f7ff;
+    border: 1.5px solid #38c6ff55;
+    border-radius: 8px;
+    padding: 0.6em 1em;
+    font-size: 1.08em;
+    min-height: 44px;
+  }
+  .summary-ground {
+    background: linear-gradient(120deg, #232c3d 60%, #2c364a 100%);
+    border-radius: 22px;
+    box-shadow: 0 6px 32px #232c3d44, 0 1.5px 8px #38c6ff22;
+    padding: 2.5rem 2.2rem 2.2rem 2.2rem;
+    margin-bottom: 2.8rem;
+    color: #e0f7ff;
+    border: 2px solid #232c3d;
+    position: relative;
+    z-index: 3;
+  }
+  .summary-row {
+    display: flex;
+    gap: 3.5rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .summary-item {
+    min-width: 180px;
+    text-align: center;
+  }
+  .summary-label {
+    font-size: 1.13rem;
+    color: #38c6ff;
+    font-weight: 600;
+    margin-bottom: 0.2em;
+  }
+  .summary-value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.1em;
+  }
+  .modern-table.summary-table {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    margin-bottom: 0;
+  }
+  .modern-table.summary-table td {
+    padding: 0.2em 1em;
+    border: none;
+    background: none;
+  }
+  .modern-table.data-table {
+    margin-top: 0.5rem;
+    background: rgba(30,36,48,0.98);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px #232c3d33;
+    border: 1.5px solid #232c3d;
+  }
+  .modern-table.data-table th, .modern-table.data-table td {
+    padding: 1.1em 1.2em;
+    font-size: 1.08em;
+  }
+  .modern-table.data-table tbody tr {
+    border-bottom: 1.2px solid #38c6ff22;
+  }
+  .modern-table.data-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .modern-table.data-table thead th {
+    font-size: 1.13em;
+    font-weight: 700;
+    color: #38c6ff;
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    background-clip: unset;
+    text-fill-color: unset;
+  }
+  .modern-table .unique-row {
+    border-bottom: 2px solid #232c3d;
+    transition: background 0.18s, box-shadow 0.18s;
+    height: 72px;
+  }
+  .modern-table .unique-value-cell {
+    position: relative;
+    min-width: 220px;
+    cursor: pointer;
+  }
+  .unique-value-hover-area {
+    position: relative;
+    display: inline-block;
+  }
+  .unique-value-list {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: rgba(30,36,48,0.98);
+    border-radius: 10px;
+    box-shadow: 0 2px 12px #38c6ff22;
+    padding: 0.7em 1.1em;
+    z-index: 10;
+    min-width: 220px;
+    margin-top: 0.2em;
+    transition: opacity 0.18s;
+    color: #e0f7ff;
+    font-size: 0.98em;
+    white-space: nowrap;
+  }
+  .unique-value-hover-area:hover .unique-value-list {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .unique-value-hover-area:hover .unique-value-placeholder {
+    opacity: 0;
+  }
+  .column-title-cell {
+    padding-left: 2.2em !important;
+    font-size: 1.13em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1.1em;
+    background: none;
+    border: none;
+  }
+  .column-title-cell .icon {
+    color: #38c6ff;
+    font-size: 1.5em;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+  }
+  .column-title-cell .column-title-text {
+    color: #e0f7ff;
+    font-size: 1.13em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+</style>
+{% block title %}Analiz Sonuçları - Data Insight{% endblock %}
+<button type="button" class="btn btn-secondary"
+        style="position: fixed; top: 20px; left: 20px; z-index: 9999;"
+        onclick="window.history.back();">
+    <i class="fas fa-arrow-left me-2"></i> Geri
+</button>
+{% block content %}
+<button type="button" class="btn btn-secondary mb-3" onclick="window.history.back();">
+    <i class="fas fa-arrow-left me-2"></i> Geri
+</button>
+<div class="container mt-4">
+    <!-- Proje Kaydetme Formu kaldırıldı -->
+
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <!-- Başlık ve PDF İndirme -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>
+                    <i class="fas fa-chart-pie me-2"></i>Analiz Sonuçları
+                    <small class="text-muted">{% if file_name %}- {{ file_name }}{% endif %}</small>
+                </h3>
+                <div>
+                    <a href="{% url 'analyzer:download_report' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Rapor İndir
+                    </a>
+                    <a href="{% url 'analyzer:download_processed_data' %}" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>İşlenmiş Veriyi İndir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Analizi Kaydet Formu -->
+            <div class="mb-4 p-4" style="background:rgba(44,54,74,0.82); border-radius:14px; border:1.2px solid #232c3d;">
+                <h4 class="mb-3"><i class="fas fa-save me-2"></i>Analizi Kaydet</h4>
+                    <form method="post" action="{% url 'analyzer:save_analysis' %}">
+                        {% csrf_token %}
+                        <div class="mb-3" style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
+                          <div style="flex:1; min-width:220px;">
+                            <label for="analysis_title" class="form-label">Analiz İsmi</label>
+                            <input type="text" class="form-control" id="analysis_title" name="analysis_title" required maxlength="100">
+                        </div>
+                          <div style="flex:1; min-width:220px;">
+                            <label class="form-label">Kimler Görebilir?</label>
+                            <select class="form-select select2-modern" name="is_public" required style="width:100%;">
+                                <option value="true">Herkese Açık (Public)</option>
+                                <option value="false">Sadece Bana Özel (Private)</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div id="publicOptions" style="display:none;">
+                            <h6>Hangi Kısımları Paylaşmak İstiyorsun?</h6>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="share_plots" id="share_plots" value="true" checked>
+                                <label class="form-check-label" for="share_plots">Grafikler</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="share_metrics" id="share_metrics" value="true" checked>
+                                <label class="form-check-label" for="share_metrics">Model Metrikleri</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="share_preprocessing" id="share_preprocessing" value="true">
+                                <label class="form-check-label" for="share_preprocessing">Ön İşleme Detayları</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Analizi Kaydet</button>
+                    </form>
+            </div>
+
+            <!-- Veri Özeti -->
+            <div class="summary-ground">
+              <h4 class="mb-3"><i class="fas fa-table me-2"></i>Veri Özeti</h4>
+              <div class="summary-row">
+                <div class="summary-item">
+                  <div class="summary-label">Toplam Satır</div>
+                  <div class="summary-value" id="summary-total-rows">0</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Toplam Sütun</div>
+                  <div class="summary-value" id="summary-total-cols">0</div>
+                                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Tekrar Eden Satır</div>
+                  <div class="summary-value" id="summary-dup-rows">0</div>
+                            </div>
+                <div class="summary-item">
+                  <div class="summary-label">Sabit Sütun</div>
+                  <div class="summary-value" id="summary-const-cols">0</div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Eksik Veri Analizi -->
+            <div class="mb-4 p-4" style="background:rgba(44,54,74,0.92); border-radius:18px; box-shadow:0 2px 16px #232c3d33; border:2px solid #232c3d;">
+                <h4 class="mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Eksik Veri Analizi</h4>
+                    <div class="table-responsive">
+                    <table class="modern-table data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sütun</th>
+                                    <th>Veri Tipi</th>
+                                    <th>Eksik Veri</th>
+                                    <th>Eksik Oranı (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for col, count in analysis.missing_values.items %}
+                                <tr>
+                                    <td>{{ col }}</td>
+                                    <td>{{ analysis.dtypes|get_item:col }}</td>
+                                    <td>{{ count }}</td>
+                                    <td>
+                                        <div class="progress position-relative">
+                                            <div class="progress-bar {% if analysis.missing_percentages|get_item:col > 80 %}bg-danger{% elif analysis.missing_percentages|get_item:col > 20 %}bg-warning{% else %}bg-success{% endif %}"
+                                                 role="progressbar"
+                                                 style="width: {{ analysis.missing_percentages|get_item:col|floatformat:1|default:0 }}%;"></div>
+                                            <span class="progress-text position-absolute w-100 text-center">{{ analysis.missing_percentages|get_item:col|floatformat:1 }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+
+            <!-- Benzersiz Değer Analizi -->
+            <div class="mb-4 p-4" style="background:rgba(44,54,74,0.92); border-radius:18px; box-shadow:0 2px 16px #232c3d33; border:2px solid #232c3d;">
+              <h4 class="mb-3"><i class="fas fa-fingerprint me-2"></i>Benzersiz Değer Analizi</h4>
+              <div class="relative overflow-x-auto shadow-md sm:rounded-lg my-8">
+                <table class="w-full text-sm text-left text-gray-300 dark:text-gray-300 table-fixed border-separate border-spacing-0">
+                  <thead class="text-xs text-gray-200 uppercase bg-gray-800 dark:bg-gray-700">
+                    <tr>
+                      <th scope="col" class="px-8 py-3 border-r border-gray-700 w-1/4">🧩 Sütun</th>
+                      <th scope="col" class="px-8 py-3 border-r border-gray-700 w-1/4">Benzersiz Sayı</th>
+                      <th scope="col" class="px-8 py-3 border-r border-gray-700 w-1/4">Benzersiz Oran (%)</th>
+                      <th scope="col" class="px-8 py-3 w-1/4">En Sık Görülen 5 Değer</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-gray-900">
+                    <tr class="border-b border-gray-700 hover:bg-gray-800 transition">
+                      <td class="px-8 py-4 font-semibold text-blue-400 border-r border-gray-700 w-1/4">
+                        <div class="flex items-center gap-2"><i class="fas fa-database"></i> Website Domain</div>
+                      </td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">8</td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">4,0%</td>
+                      <td class="px-8 py-4 text-sm leading-6 w-1/4">
+                        <ul>
+                          <li><strong>infosys.com</strong>: 64</li>
+                          <li><strong>wipro.com</strong>: 62</li>
+                          <li><strong>samsung.com</strong>: 39</li>
+                          <li><strong>sony.com</strong>: 26</li>
+                          <li><strong>baidu.com</strong>: 6</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-gray-700 hover:bg-gray-800 transition">
+                      <td class="px-8 py-4 font-semibold text-blue-400 border-r border-gray-700 w-1/4">
+                        <div class="flex items-center gap-2"><i class="fas fa-barcode"></i> Ticker</div>
+                      </td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">8</td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">4,0%</td>
+                      <td class="px-8 py-4 text-sm leading-6 w-1/4">
+                        <ul>
+                          <li><strong>NYSE:INFY</strong>: 64</li>
+                          <li><strong>NYSE:WIT</strong>: 62</li>
+                          <li><strong>NASDAQOTH:SSNLF</strong>: 39</li>
+                          <li><strong>NYSE:SNE</strong>: 26</li>
+                          <li><strong>NASDAQ:BIDU</strong>: 6</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-800 transition">
+                      <td class="px-8 py-4 font-semibold text-blue-400 border-r border-gray-700 w-1/4">
+                        <div class="flex items-center gap-2"><i class="fas fa-lock"></i> Technology Name</div>
+                      </td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">162</td>
+                      <td class="px-8 py-4 border-r border-gray-700 w-1/4">81,0%</td>
+                      <td class="px-8 py-4 text-sm leading-6 w-1/4">
+                        <ul>
+                          <li><strong>X-Content-Type-Options</strong>: 7</li>
+                          <li><strong>HTML</strong>: 5</li>
+                          <li><strong>Microsoft Intune</strong>: 4</li>
+                          <li><strong>Prometheus</strong>: 4</li>
+                          <li><strong>Spring Framework</strong>: 3</li>
+                        </ul>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Veri Tipi Tutarlılığı Kontrolleri -->
+            <div class="row" style="gap: 2rem; flex-wrap: wrap;">
+              <div class="col-md-6" style="flex:1; min-width:320px;">
+                <div class="mb-4 p-4" style="background:rgba(44,54,74,0.82); border-radius:14px; border:1.2px solid #232c3d;">
+                  <h4 class="mb-3"><i class="fas fa-exclamation-circle me-2"></i>Veri Tipi Tutarlılığı Kontrolleri</h4>
+                  {% if analysis.dtype_consistency_info %}
+                    <div class="table-responsive">
+                    <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Sütun</th>
+                                    <th>Tutarsız Değer Sayısı</th>
+                                    <th>Örnek Tutarsız Değerler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for col, info in analysis.dtype_consistency_info.items %}
+                                <tr>
+                                    <td>{{ col }}</td>
+                                    <td>{{ info.inconsistent_values_count }}</td>
+                                    <td>
+                                        {% if info.example_values %}
+                                            <ul class="list-unstyled mb-0 small">
+                                                {% for value in info.example_values %}
+                                                    <li>{{ value }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            Yok
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                  {% else %}
+                    <div class="alert alert-success mb-0" role="alert">
+                      <i class="fas fa-check-circle me-2"></i>Tüm sütunlarda veri tipi tutarlılığı sağlandı.
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-6" style="flex:1; min-width:320px;">
+                <div class="mb-4 p-4" style="background:rgba(44,54,74,0.82); border-radius:14px; border:1.2px solid #232c3d;">
+                  <h4 class="mb-3"><i class="fas fa-leaf me-2"></i>Aykırı Değer Tespiti (IQR Metodu)</h4>
+                  {% if analysis.outlier_info %}
+                    <div class="table-responsive">
+                    <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Sütun</th>
+                                    <th>Aykırı Sayısı</th>
+                                    <th>Aykırı Oranı (%)</th>
+                                    <th>Alt Sınır</th>
+                                    <th>Üst Sınır</th>
+                                    <th>Örnek Aykırı Değerler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for col, info in analysis.outlier_info.items %}
+                                <tr>
+                                    <td>{{ col }}</td>
+                                    <td>{{ info.count }}</td>
+                                    <td>{{ info.percentage|floatformat:2 }}%</td>
+                                    <td>{{ info.lower_bound|floatformat:2 }}</td>
+                                    <td>{{ info.upper_bound|floatformat:2 }}</td>
+                                    <td>
+                                        {% if info.example_values %}
+                                            <ul class="list-unstyled mb-0 small">
+                                                {% for value in info.example_values %}
+                                                    <li>{{ value }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            Yok
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                  {% else %}
+                    <div class="alert alert-success mb-0" role="alert">
+                      <i class="fas fa-check-circle me-2"></i>Veri setinde aykırı değer bulunamadı.
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Uygulanan İşlemler Özeti -->
+            <!-- Kart kutusu -->
+            <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
+              <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <i class="fas fa-cogs text-blue-400"></i> Uygulanan İşlemler Özeti
+              </h2>
+              <table class="w-full text-sm text-gray-300">
+                <tbody>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Eksik Veri Doldurma</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.missing_data_filled.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı (Metot: {{ applied_operations_summary.missing_data_filled.method }})
+                        </span>
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Kategorik Kodlama</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.categorical_encoding.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı (Metot: {{ applied_operations_summary.categorical_encoding.method }})
+                        </span>
+                        {% if applied_operations_summary.categorical_encoding.encoded_columns %}
+                          <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full ml-2">
+                            Kodlanan Sütunlar: {{ applied_operations_summary.categorical_encoding.encoded_columns|join:', ' }}
+                          </span>
+                        {% endif %}
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Normalizasyon/Standardizasyon</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.normalization.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı (Metot: {{ applied_operations_summary.normalization.method }})
+                        </span>
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Sabit Sütunları Kaldırıldı</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.removed_constant_columns.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı
+                        </span>
+                        {% if applied_operations_summary.removed_constant_columns.columns %}
+                          <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full ml-2">
+                            Kaldırılan Sütunlar: {{ applied_operations_summary.removed_constant_columns.columns|join:', ' }}
+                          </span>
+                        {% endif %}
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Yüksek Eksik Veri Sütunları Kaldırıldı</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.removed_high_missing_columns.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı
+                        </span>
+                        {% if applied_operations_summary.removed_high_missing_columns.columns %}
+                          <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full ml-2">
+                            Kaldırılan Sütunlar: {{ applied_operations_summary.removed_high_missing_columns.columns|join:', ' }}
+                          </span>
+                        {% endif %}
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-700">
+                    <td class="py-3 font-medium">Model Eğitimi</td>
+                    <td class="py-3 text-right">
+                      {% if applied_operations_summary.model_training.applied %}
+                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulandı (Model: {{ applied_operations_summary.model_training.model_type }})
+                        </span>
+                      {% else %}
+                        <span class="bg-gray-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          Uygulanmadı
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Model Sonuçları -->
+            <div class="mb-4 p-4" style="background:rgba(44,54,74,0.82); border-radius:14px; border:1.2px solid #232c3d;">
+                <h4 class="mb-3"><i class="fas fa-chart-line me-2"></i>Model Sonuçları</h4>
+                    {% if model_metrics %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Performans Metrikleri:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for metric_name, metric_value in model_metrics.items %}
+                                    {% if metric_name != 'feature_importances' and metric_name != 'feature_coefficients' %}
+                                        {% if metric_value is not None and metric_value|stringformat:"s"|length < 30 and metric_value|stringformat:"s"|floatformat:"4" != "nan" and metric_value|stringformat:"s"|floatformat:"4" != "inf" %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ metric_name|title }}:
+                                                <span class="badge bg-primary rounded-pill">
+                                                    {{ metric_value|floatformat:4 }}
+                                                </span>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% if model_metrics.feature_importances or model_metrics.feature_coefficients %}
+                        <div class="col-md-6">
+                            <h6>Özellik Önemliliği/Katsayıları:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% if model_metrics.feature_importances %}
+                                    {% for feature, importance in model_metrics.feature_importances.items %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ feature|title }}:
+                                            <span class="badge bg-info rounded-pill">{{ importance|floatformat:4 }}</span>
+                                        </li>
+                                    {% endfor %}
+                                {% elif model_metrics.feature_coefficients %}
+                                    {% for feature, coeff in model_metrics.feature_coefficients.items %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ feature|title }}:
+                                            <span class="badge bg-info rounded-pill">{{ coeff|floatformat:4 }}</span>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% elif model_error %}
+                    <div class="alert alert-danger mb-0" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>Model Eğitimi Hatası: {{ model_error }}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>Model eğitimi yapılmadı.
+                    </div>
+                    {% endif %}
+            </div>
+
+            
+            <!-- Grafiklerin Gösterildiği Bölüm -->
+            <div class="modern-section" data-aos="fade-left">
+                <h4 class="mb-3"><i class="fas fa-chart-bar me-2"></i>Grafikler</h4>
+                    {% if plots %}
+                    <div class="row">
+                        {% for plot_name, plot_data in plots.items %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="modern-plot-card">
+                            <h6 class="mb-2 text-center" style="color:#38c6ff; font-weight:600;">{{ plot_name|title|underscore_to_space }}</h6>
+                            <div class="d-flex align-items-center justify-content-center p-2">
+                                    <img src="data:image/png;base64,{{ plot_data|safe }}"
+                                         class="img-fluid plot-img"
+                                         alt="{{ plot_name }}"
+                                         style="cursor: pointer;"
+                                         data-plot-name="{{ plot_name }}"
+                                         data-plot-src="data:image/png;base64,{{ plot_data|safe }}">
+                                </div>
+                            <div class="modern-plot-desc">{{ plot_name|title|underscore_to_space }} Değer Dağılımı</div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning mb-0" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Grafik yüklenirken bir hata oluştu veya hiç grafik oluşturulamadı.
+                    </div>
+                    {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll to results section if hash exists
+        if (window.location.hash) {
+            setTimeout(function() {
+                document.querySelector(window.location.hash).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 100); // Small delay to ensure content is rendered
+        }
+
+        // Debugging for plots
+        const plotImages = document.querySelectorAll('.card-body img');
+        plotImages.forEach(img => {
+            console.log('Plot Image SRC:', img.src.substring(0, 100) + '...'); // Log first 100 chars
+            if (!img.complete || img.naturalWidth === 0) {
+                console.error('Plot image failed to load:', img.alt);
+            }
+        });
+
+        const select = document.querySelector('select[name="is_public"]');
+        const publicOptions = document.getElementById('publicOptions');
+        if (select) {
+            function togglePublicOptions() {
+                if (select.value === "true") {
+                    publicOptions.style.display = "block";
+                } else {
+                    publicOptions.style.display = "none";
+                }
+            }
+            select.addEventListener('change', togglePublicOptions);
+            togglePublicOptions(); // Sayfa yüklenince de kontrol et
+        }
+
+        // Grafik büyütme ve indirme
+        document.querySelectorAll('.plot-img').forEach(function(img) {
+            img.addEventListener('click', function() {
+                var src = img.getAttribute('data-plot-src');
+                var name = img.getAttribute('data-plot-name');
+                document.getElementById('modalPlotImg').src = src;
+                document.getElementById('plotModalLabel').innerText = name;
+                // İndirme linkini ayarla
+                document.getElementById('downloadPlotBtn').href = src;
+                document.getElementById('downloadPlotBtn').download = (name || 'grafik') + '.png';
+                // Bootstrap modalı aç
+                var modal = new bootstrap.Modal(document.getElementById('plotModal'));
+                modal.show();
+            });
+        });
+    });
+</script>
+<!-- Grafik Büyütme ve İndirme Modalı -->
+<div class="modal fade" id="plotModal" tabindex="-1" aria-labelledby="plotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="plotModalLabel">Grafik</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalPlotImg" src="" alt="Büyük Grafik" class="img-fluid" style="max-height:70vh;">
+      </div>
+      <div class="modal-footer">
+        <a id="downloadPlotBtn" href="#" download="grafik.png" class="btn btn-success">
+          <i class="fas fa-download me-2"></i>İndir
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% include "analyzer/faq.html" %}
+{% endblock %}
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select2 uygula (özellikle .select2-modern için)
+    $('.select2-modern').select2({
+      theme: 'default',
+      width: '100%'
+    });
+    // AOS başlat
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  });
+</script>
+<script>
+function expandList(link) {
+  var ul = link.closest('ul');
+  ul.querySelectorAll('.expand-item').forEach(function(li) {
+    li.style.display = '';
+  });
+  link.parentElement.style.display = 'none';
+}
+</script>
+<script>
+function toggleRowDetails(badge) {
+  var tr = badge.closest('tr');
+  var next = tr.nextElementSibling;
+  if (next && next.classList.contains('modern-table-row-details')) {
+    next.style.display = (next.style.display === 'none' ? '' : 'none');
+  } else {
+    var detailsTr = document.createElement('tr');
+    detailsTr.className = 'modern-table-row-details';
+    var td = document.createElement('td');
+    td.colSpan = tr.children.length;
+    td.innerHTML = '<div style="padding:1.2em 1em;">Detaylar... (Buraya ilgili satırın detayları eklenebilir)</div>';
+    detailsTr.appendChild(td);
+    tr.parentNode.insertBefore(detailsTr, tr.nextSibling);
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.6.2/countUp.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sayı animasyonu (CountUp)
+    var totalRows = {{ analysis.total_rows|default:0 }};
+    var totalCols = {{ analysis.total_columns|default:0 }};
+    var dupRows = {{ analysis.duplicate_rows|default:0 }};
+    var constCols = {{ analysis.constant_columns|length|default:0 }};
+    new CountUp('summary-total-rows', 0, totalRows, 0, 1.2).start();
+    new CountUp('summary-total-cols', 0, totalCols, 0, 1.2).start();
+    new CountUp('summary-dup-rows', 0, dupRows, 0, 1.2).start();
+    new CountUp('summary-const-cols', 0, constCols, 0, 1.2).start();
+  });
+</script>

@@ -1,0 +1,234 @@
+{% load analyzer_filters %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Insight - Analiz Raporu</title>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        @font-face {
+            font-family: "DejaVu Sans";
+            src: url("/absolute/path/to/your/project/static/fonts/DejaVuSans.ttf");
+        }
+        body, table, th, td, h1, h2, h3, h4, h5, h6, p, ul, li {
+            font-family: 'DejaVu Sans', Arial, sans-serif !important;
+            font-size: 12px;
+            color: #222;
+        }
+        h1, h2, h3 { color: #222; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #888; padding: 6px; }
+        th { background: #f0f0f0; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .section { margin-bottom: 20px; }
+        .metric-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            display: inline-block;
+            min-width: 120px;
+            margin-right: 10px;
+        }
+        .metric-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .metric-value {
+            font-size: 1.2em;
+            color: #3498db;
+        }
+        .plot {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .plot img {
+            max-width: 400px;
+            max-height: 300px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        ul {
+            margin: 0 0 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Data Insight - Veri Analiz Raporu</h1>
+        <p>Oluşturulma Tarihi: {{ timestamp }}</p>
+        <p>Dosya: {{ file_name }}</p>
+    </div>
+
+    <!-- Veri Özeti -->
+    <div class="section">
+        <h2 class="section-title">Veri Özeti</h2>
+        <div>
+            <div class="metric-box">
+                <div class="metric-title">Toplam Satır</div>
+                <div class="metric-value">{{ analysis.total_rows }}</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Toplam Sütun</div>
+                <div class="metric-value">{{ analysis.total_columns }}</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Tekrar Eden Satır</div>
+                <div class="metric-value">{{ analysis.duplicate_rows }}</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Sabit Sütun</div>
+                <div class="metric-value">{{ analysis.constant_columns|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eksik Veri Analizi -->
+    <div class="section">
+        <h2 class="section-title">Eksik Veri Analizi</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sütun</th>
+                    <th>Veri Tipi</th>
+                    <th>Eksik Veri</th>
+                    <th>Eksik Oranı (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for col, count in analysis.missing_values.items %}
+                <tr>
+                    <td>{{ col }}</td>
+                    <td>{{ analysis.dtypes|get_item:col }}</td>
+                    <td>{{ count }}</td>
+                    <td>{{ analysis.missing_percentages|get_item:col|floatformat:1 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Uygulanan İşlemler Özeti -->
+    {% if applied_operations_summary %}
+    <div class="section">
+        <h2 class="section-title">Uygulanan İşlemler Özeti</h2>
+        <ul>
+            <li>Eksik Veri Doldurma: {{ applied_operations_summary.missing_data_filled.method|default:'-' }}</li>
+            <li>Kategorik Kodlama: {{ applied_operations_summary.categorical_encoding.method|default:'-' }}</li>
+            <li>Normalizasyon: {{ applied_operations_summary.normalization.method|default:'-' }}</li>
+            <li>Sabit Sütunları Kaldırıldı: {% if applied_operations_summary.removed_constant_columns.applied %}Evet{% else %}Hayır{% endif %}</li>
+            <li>Yüksek Eksik Veri Sütunları Kaldırıldı: {% if applied_operations_summary.removed_high_missing_columns.applied %}Evet{% else %}Hayır{% endif %}</li>
+            <li>Model Eğitimi: {% if applied_operations_summary.model_training.applied %}Evet ({{ applied_operations_summary.model_training.model_type }}){% else %}Hayır{% endif %}</li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Model Sonuçları -->
+    {% if model_metrics %}
+    <div class="section">
+        <h2 class="section-title">Model Sonuçları</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metirk</th>
+                    <th>Değer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for metric_name, metric_value in model_metrics.items %}
+                    {% if metric_name != 'feature_importances' and metric_name != 'feature_coefficients' %}
+                    <tr>
+                        <td>{{ metric_name }}</td>
+                        <td>{{ metric_value }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if model_metrics.feature_importances %}
+        <h3>Özellik Önemliliği</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Özellik</th>
+                    <th>Önem Skoru</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature, importance in model_metrics.feature_importances.items %}
+                <tr>
+                    <td>{{ feature }}</td>
+                    <td>{{ importance|floatformat:4 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif model_metrics.feature_coefficients %}
+        <h3>Özellik Katsayıları</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Özellik</th>
+                    <th>Katsayı</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature, coeff in model_metrics.feature_coefficients.items %}
+                <tr>
+                    <td>{{ feature }}</td>
+                    <td>{{ coeff|floatformat:4 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Grafikler (Tüm Plots) -->
+    {% if plots %}
+    <div class="section">
+        <h2 class="section-title">Grafikler</h2>
+        {% for plot_name, plot_data in plots.items %}
+            <div class="plot">
+                <strong>{{ plot_name|title|underscore_to_space }}</strong><br>
+                <img src="data:image/png;base64,{{ plot_data }}" alt="{{ plot_name }}">
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Veri Ön İşleme Bilgileri -->
+    {% if preprocessing_info %}
+    <div class="section">
+        <h2 class="section-title">Veri Ön İşleme Bilgileri</h2>
+        {% if preprocessing_info.removed_constant_columns %}
+        <h3>Kaldırılan Sabit Sütunlar</h3>
+        <ul>
+            {% for col in preprocessing_info.removed_constant_columns %}
+            <li>{{ col }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if preprocessing_info.removed_high_missing_columns %}
+        <h3>Kaldırılan Yüksek Eksik Veri İçeren Sütunlar</h3>
+        <ul>
+            {% for col in preprocessing_info.removed_high_missing_columns %}
+            <li>{{ col }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Bu rapor Data Insight platformu tarafından otomatik olarak oluşturulmuştur.</p>
+    </div>
+</body>
+</html> 

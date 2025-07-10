@@ -1,0 +1,691 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Data Insight{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <!-- Choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+
+    <style>
+      body { font-family: 'Rubik', Arial, sans-serif; }
+      nav { transition: background-color 0.3s ease; }
+      nav.scrolled { background-color: rgba(0, 0, 0, 0.8)!important; }
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0;
+        height: 2px;
+        background: transparent;
+        transition: width 0.3s;
+      }
+      .nav-link:hover::after { width: 100%; }
+      .theme-toggle { cursor: pointer; }
+      .hero-section .overlay {
+          background: rgba(24,26,27,0.08); /* Daha da şeffaf! */
+      }
+      .feature-card {
+          background: rgba(0,0,0,0.3);
+          border-radius: 18px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+          transition: transform 0.2s, box-shadow 0.2s;
+          color: #fff;
+      }
+      .feature-card:hover {
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.16);
+      }
+      .hero-section,
+      .hero-section .container,
+      .hero-section .text-center {
+          background: none !important;
+          box-shadow: none !important;
+      }
+      .navbar {
+        background: rgba(0,0,0,0.6) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        font-family: 'Rubik', Arial, sans-serif;
+      }
+      .navbar .nav-link, .navbar .dropdown-item {
+        font-family: 'Rubik', Arial, sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        font-size: 1.09rem;
+        color: #e0f7ff !important;
+        transition: color 0.3s, background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.55em;
+        margin: 0 0.7em;
+        padding: 0.45em 0.7em !important;
+        border-radius: 8px;
+        position: relative;
+      }
+      .navbar .nav-link:hover, .navbar .dropdown-item:hover {
+        color: #00e0ff !important;
+        background: rgba(0,217,255,0.10);
+        box-shadow: 0 2px 12px #00e0ff22;
+      }
+      .navbar .nav-link i, .navbar .dropdown-item i {
+        font-size: 1.18em;
+        margin-right: 0.18em;
+        transition: transform 0.25s cubic-bezier(.68,-0.55,.27,1.55), color 0.22s;
+      }
+      .navbar .nav-link:hover i, .navbar .dropdown-item:hover i {
+        color: #00e0ff !important;
+        transform: scale(1.18) rotate(-8deg);
+      }
+      .navbar-nav {
+        gap: 0.2em;
+      }
+      @media (min-width: 992px) {
+        .navbar-nav {
+          gap: 0.7em;
+        }
+      }
+      .theme-toggle {
+        cursor: pointer;
+        font-size: 1.5em;
+        background: none;
+        border: none;
+        color: #a5d9f3;
+        transition: color 0.3s, transform 0.3s;
+      }
+      .theme-toggle:hover {
+        color: #00d9ff;
+        transform: rotate(20deg) scale(1.15);
+      }
+      .login-btn {
+        border: 1.5px solid #00d9ff !important;
+        background-color: transparent !important;
+        color: #00d9ff !important;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+      .login-btn:hover {
+        background-color: #00d9ff !important;
+        color: #000 !important;
+        border-color: #00d9ff !important;
+      }
+      .register-btn {
+        background: linear-gradient(90deg, #b3e0ff 0%, #38c6ff 100%) !important;
+        color: #000 !important;
+        font-weight: bold;
+        border: none !important;
+        transition: all 0.3s;
+      }
+      .register-btn:hover {
+        background: linear-gradient(90deg, #84caff 0%, #00d9ff 100%) !important;
+        color: #fff !important;
+      }
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .navbar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 0.5rem;
+        border: 2px solid #fff2;
+        background: #fff4;
+      }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+    <!-- Video arka planı ve bg_video bloğu kaldırıldı -->
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background:rgba(0,0,0,0.85);">
+      <div class="container-fluid px-4">
+        {% if request.user.is_authenticated %}
+          <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'analyzer:dashboard' %}">
+            <span style="display:inline-block; width:32px; height:32px;">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="4" y="18" width="4" height="10" rx="2" fill="#38c6ff"/>
+                <rect x="10" y="10" width="4" height="18" rx="2" fill="#6c63ff"/>
+                <rect x="16" y="6" width="4" height="22" rx="2" fill="#38c6ff"/>
+                <rect x="22" y="2" width="4" height="26" rx="2" fill="#6c63ff"/>
+              </svg>
+            </span>
+            <span class="ms-2">Data Insight</span>
+          </a>
+        {% else %}
+          <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'analyzer:home' %}">
+            <span style="display:inline-block; width:32px; height:32px;">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="4" y="18" width="4" height="10" rx="2" fill="#38c6ff"/>
+                <rect x="10" y="10" width="4" height="18" rx="2" fill="#6c63ff"/>
+                <rect x="16" y="6" width="4" height="22" rx="2" fill="#38c6ff"/>
+                <rect x="22" y="2" width="4" height="26" rx="2" fill="#6c63ff"/>
+              </svg>
+            </span>
+            <span class="ms-2">Data Insight</span>
+          </a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          {% if request.path == '/' or request.path == '/login/' or request.path == '/register/' or request.path == '/accounts/login/' %}
+            <ul class="navbar-nav ms-auto align-items-center">
+              <li class="nav-item"><a class="nav-link" href="#analizler">Analizler</a></li>
+              <li class="nav-item"><a class="nav-link" href="#faq">SSS</a></li>
+              <li class="nav-item"><a class="nav-link" href="#contact">İletişim</a></li>
+              <li class="nav-item ms-2">
+                <a href="{% url 'login' %}" class="btn btn-info px-4 fw-bold" style="border-radius:10px;">Giriş</a>
+              </li>
+              <li class="nav-item ms-2">
+                <a href="{% url 'analyzer:register' %}" class="fw-bold" style="color:#19c3ff; font-size:1.1rem; text-decoration:none;">Kayıt Ol</a>
+              </li>
+            </ul>
+          {% elif request.user.is_authenticated %}
+            <ul class="navbar-nav ms-auto align-items-center">
+              <li class="nav-item"><a class="nav-link" href="{% url 'analyzer:my_analyses' %}">Analizlerim</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'analyzer:upload' %}">Veri Yükle</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'analyzer:public_analyses' %}">Örnekler</a></li>
+              <li class="nav-item"><a class="nav-link" href="#faq">SSS</a></li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="avatar-circle navbar-avatar me-2">{{ user.username|first|upper }}</div>
+                  {{ user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="{% url 'analyzer:profile_edit' %}"><i class="fas fa-user me-2"></i>Profilim</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><form action="{% url 'logout' %}" method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item" style="background:none; border:none; width:100%; text-align:left;">
+                          <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
+                      </button>
+                  </form></li>
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    <style>
+      body {
+        font-family: 'Inter', Arial, sans-serif;
+        background: #181f2a;
+        color: #f5f6fa;
+        margin: 0;
+        padding: 0;
+        padding-top: 70px !important; /* Navbar yüksekliği kadar boşluk bırak */
+      }
+      .custom-navbar {
+        background: #1a2332;
+        border-bottom: 1.5px solid #232c3d;
+        box-shadow: none;
+        padding: 0.7rem 0;
+        min-height: 60px;
+      }
+      .custom-navbar.fixed-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+      .navbar-icon svg {
+        display: block;
+      }
+      .navbar-brand-text {
+        font-weight: 700;
+        font-size: 1.35rem;
+        color: #f5f6fa;
+        letter-spacing: 0.01em;
+      }
+      .navbar-menu {
+        list-style: none;
+        gap: 2.2rem;
+        margin: 0;
+        padding: 0;
+      }
+      .navbar-menu li {
+        display: inline-block;
+      }
+      .navbar-link {
+        color: #e0e7ef;
+        font-weight: 500;
+        font-size: 1.08rem;
+        text-decoration: none;
+        transition: color 0.2s, background 0.2s;
+        padding: 0.2em 0.5em;
+        border-radius: 6px;
+      }
+      .navbar-link:hover, .navbar-link:focus {
+        color: #38c6ff;
+        background: #232c3d;
+      }
+      .navbar-actions .btn {
+        font-family: 'Inter', Arial, sans-serif;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.08rem;
+        padding: 0.45rem 1.2rem;
+        box-sizing: border-box;
+        border: none;
+        margin-left: 0.5em;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+      }
+      .btn-accent {
+        background: #38c6ff;
+        color: #181f2a;
+        border: none;
+      }
+      .btn-accent:hover {
+        background: #6c63ff;
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        color: #38c6ff;
+        border: 2px solid #38c6ff;
+      }
+      .btn-outline:hover {
+        background: #232c3d;
+        color: #fff;
+        border-color: #6c63ff;
+      }
+      @media (max-width: 900px) {
+        .navbar-menu {
+          gap: 1.1rem;
+        }
+        .navbar-brand-text {
+          font-size: 1.1rem;
+        }
+      }
+      @media (max-width: 700px) {
+        .container-fluid {
+          flex-direction: column;
+          align-items: flex-start !important;
+        }
+        .navbar-menu {
+          margin-top: 0.7em;
+        }
+        .navbar-actions {
+          margin-top: 0.7em;
+        }
+      }
+    </style>
+
+    {% if user.is_authenticated %}
+    <!-- Kullanıcıya özel karşılama ve çıkış satırı kaldırıldı -->
+    {% endif %}
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scroll Navbar Background -->
+    <script>
+      window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.main-navbar');
+        if (window.scrollY > 50) {
+          nav.style.padding = '0.3rem 0';
+          nav.style.background = 'rgba(24,26,27,0.92)';
+        } else {
+          nav.style.padding = '';
+          nav.style.background = 'rgba(24,26,27,0.65)';
+        }
+      });
+    </script>
+
+    <!-- Theme Toggle -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+      }
+      const btn = document.querySelector(".theme-toggle");
+      btn.innerHTML = document.body.classList.contains("dark-mode") ? '☀️' : '🌙';
+      btn.addEventListener("click", function() {
+        document.body.classList.toggle("dark-mode");
+        btn.innerHTML = document.body.classList.contains("dark-mode") ? '☀️' : '🌙';
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+      });
+    });
+    </script>
+
+    <!-- Choices.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+      window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.main-navbar');
+        if (window.scrollY > 50) {
+          nav.style.padding = '0.3rem 0';
+          nav.style.background = 'rgba(24,26,27,0.92)';
+        } else {
+          nav.style.padding = '';
+          nav.style.background = 'rgba(24,26,27,0.65)';
+        }
+      });
+    </script>
+    <!-- Footer -->
+   
+    <footer id="contact" class="bg-dark text-light pt-5 pb-3 mt-5 border-top">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <h5>İletişim <span style="font-size:1.2em;">📧</span></h5>
+              <p class="footer-contact">
+                Email: <a href="mailto:info@datainsight.com" class="footer-link">info@datainsight.com</a><br>
+                Telefon: <a href="tel:+905555555555" class="footer-link">+90 555 555 55 55</a>
+              </p>
+            </div>
+            <div class="col-md-4 mb-3">
+              <h5>Gizlilik <span style="font-size:1.2em;">🔐</span></h5>
+              <p>
+                <a href="#" class="text-decoration-none footer-link">KVKK ve Gizlilik Politikası</a><br>
+                <a href="#" class="text-decoration-none footer-link">Çerez Politikası</a>
+              </p>
+            </div>
+            <div class="col-md-4 mb-3">
+              <h5>Kaynaklar <span style="font-size:1.2em;">🔗</span></h5>
+              <ul class="list-unstyled">
+                <li><a href="#" class="text-decoration-none footer-link">Dokümantasyon</a></li>
+                <li><a href="#" class="text-decoration-none footer-link">GitHub</a></li>
+                <li><a href="#" class="text-decoration-none footer-link">Yardım Merkezi</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="text-center mt-4 text-muted">
+            © 2025 Data Insight. Tüm hakları saklıdır.
+          </div>
+        </div>
+      </footer>
+      
+    <style>
+    .footer-link {
+      color: #a5d9f3;
+      transition: color 0.22s;
+    }
+    .footer-link:hover {
+      color: #38c6ff;
+      text-decoration: underline;
+    }
+    .footer-contact a.footer-link {
+      color: #b8eaff;
+    }
+    .footer-contact a.footer-link:hover {
+      color: #38c6ff;
+    }
+    footer.bg-dark h5 {
+      color: #e0f7ff;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+    footer.bg-dark {
+      background: linear-gradient(120deg, #181a1b 0%, #23272b 100%);
+      border-top: 1.5px solid #23272b;
+    }
+    .navbar .btn,
+    .navbar .btn-outline-info,
+    .navbar .btn-info {
+      min-width: 110px;
+      min-height: 40px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.08rem;
+      padding: 0.5rem 1.2rem;
+      box-sizing: border-box;
+      transition: all 0.3s;
+      border-width: 2px !important;   /* Kenarlık kalınlığı eşitlendi */
+      line-height: 1.2;
+    }
+
+    .navbar .btn-outline-info {
+      color: #0dcaf0 !important;
+      background: transparent !important;
+      border: 2px solid #0dcaf0 !important;
+    }
+
+    .navbar .btn-outline-info:hover {
+      background: #a5d9f3 !important;
+      color: #111 !important;
+      border: 2px solid #a5d9f3 !important;
+    }
+    </style>
+   
+  
+</body>
+</html>
+
+<!-- Profil Modalı -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content profile-modern-glass">
+      <div class="modal-header border-0 flex-column align-items-center bg-transparent">
+        <div class="profile-avatar-wrapper mb-2">
+          <div class="avatar-circle profile-modern-avatar">{{ user.username|first|upper }}</div>
+        </div>
+        <h4 class="modal-title w-100 text-center fw-bold mb-1" id="profileModalLabel">{{ user.first_name }} {{ user.last_name }}</h4>
+        <span class="text-muted mb-2" style="font-size:1em;">@{{ user.username }}</span>
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="container-fluid px-0">
+          <div class="row gy-3 gx-4 align-items-center profile-info-grid">
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-envelope text-gradient"></i>
+                <span class="fw-semibold">Email:</span>
+                <span class="ms-1">{{ user.email }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-birthday-cake text-gradient"></i>
+                <span class="fw-semibold">Doğum Tarihi:</span>
+                <span class="ms-1">{{ user.userprofile.birth_date|date:'d.m.Y' }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-user text-gradient"></i>
+                <span class="fw-semibold">Ad:</span>
+                <span class="ms-1">{{ user.first_name }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-venus-mars text-gradient"></i>
+                <span class="fw-semibold">Cinsiyet:</span>
+                <span class="ms-1">{{ user.userprofile.get_gender_display }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-user text-gradient"></i>
+                <span class="fw-semibold">Soyad:</span>
+                <span class="ms-1">{{ user.last_name }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-clock text-gradient"></i>
+                <span class="fw-semibold">Son giriş zamanı:</span>
+                <span class="ms-1">{{ user.last_login|date:'d.m.Y H:i' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-between flex-wrap">
+        <a href="{% url 'analyzer:profile_edit' %}" class="btn btn-gradient px-4 mb-2 mb-md-0"><i class="fas fa-edit me-1"></i> Düzenle</a>
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<div id="loading-lottie" style="display:none; text-align:center;">
+  <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_2kscui.json" background="transparent" speed="1" style="width: 80px; height: 80px;" loop autoplay></lottie-player>
+  <div class="mt-2 text-info">Veriler analiz ediliyor...</div>
+</div>
+
+<script>
+document.querySelectorAll('a[href^="#faq"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+</script>
+
+<script>
+  // Smooth scroll for anchor links (Analizler, SSS, İletişim)
+  document.querySelectorAll('a[href^="#analizler"], a[href^="#faq"], a[href^="#contact"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Fade-in animation for .fade-in-section
+  function fadeInOnScroll() {
+    document.querySelectorAll('.fade-in-section').forEach(function(section) {
+      var rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 100) {
+        section.classList.add('fade-in-visible');
+      }
+    });
+  }
+  window.addEventListener('scroll', fadeInOnScroll);
+  window.addEventListener('DOMContentLoaded', fadeInOnScroll);
+</script>
+<style>
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(.68,-0.55,.27,1.55), transform 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+  }
+  .fade-in-visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+</style>
+
+<style>
+/* Profil dropdown menüsü için koyu ve modern stil */
+.dropdown-menu {
+  background: #181f2a !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(56,198,255,0.10);
+  min-width: 180px;
+  padding: 0.5rem 0;
+}
+.dropdown-menu .dropdown-item {
+  color: #e0e7ef !important;
+  font-weight: 500;
+  font-size: 1.08rem;
+  padding: 0.7em 1.2em;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+}
+.dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
+  background: #232c3d !important;
+  color: #38c6ff !important;
+}
+.dropdown-divider {
+  border-top: 1.5px solid #232c3d !important;
+}
+</style>
+
+<style>
+#faq {
+  scroll-margin-top: 90px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a[href="#faq"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.getElementById('faq');
+      if (target) {
+        e.preventDefault();
+        window.scrollTo({
+          top: target.getBoundingClientRect().top + window.scrollY - 90, // navbar yüksekliği
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+});
+</script>
+
+<style>
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #23395d;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.10);
+}
+</style>

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<button type="button" class="btn btn-secondary"
+        style="position: fixed; top: 20px; left: 20px; z-index: 9999;"
+        onclick="window.history.back();">
+    <i class="fas fa-arrow-left me-2"></i> Geri
+</button>
+<div class="container mt-4">
+  <h2>Analizi Sil</h2>
+  <p><strong>{{ analysis.title }}</strong> adlı analizi silmek istediğinize emin misiniz?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Evet, Sil</button>
+    <a href="{% url 'analyzer:dashboard' %}" class="btn btn-secondary">Vazgeç</a>
+  </form>
+</div>
+{% endblock %}

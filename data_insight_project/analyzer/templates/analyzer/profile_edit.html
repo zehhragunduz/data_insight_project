@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container profile-edit-container">
+  <ul class="nav nav-tabs mb-4 justify-content-center" id="profileTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="profile-info-tab" data-bs-toggle="tab" data-bs-target="#profile-info" type="button" role="tab" aria-controls="profile-info" aria-selected="true">Profil Bilgileri</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="change-password-tab" data-bs-toggle="tab" data-bs-target="#change-password" type="button" role="tab" aria-controls="change-password" aria-selected="false">Şifre Değiştir</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="profileTabContent">
+    <div class="tab-pane fade show active" id="profile-info" role="tabpanel" aria-labelledby="profile-info-tab">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: #a5d9f3; font-family: 'Inter', 'Poppins', 'Segoe UI', Arial, sans-serif;">Profilimi Düzenle</h3>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {% for field in form %}
+            {% if field.name == 'birth_date' %}
+              <label for="id_birth_date" class="fw-semibold mb-2">Doğum Tarihi:</label>
+              <input type="date" name="birth_date" id="id_birth_date" class="form-control mb-3" value="{{ field.value|date:'Y-m-d' }}">
+            {% else %}
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+              {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-gradient w-100 mt-3">Kaydet</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: #a5d9f3; font-family: 'Inter', 'Poppins', 'Segoe UI', Arial, sans-serif;">Şifre Değiştir</h3>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="change_password" value="1">
+        {% for field in password_form %}
+          <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success w-100 py-2 fs-5">Şifreyi Değiştir</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

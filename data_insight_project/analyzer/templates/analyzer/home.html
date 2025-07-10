@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Ana içerik kapsayıcısı -->
+<div id="mainContent">
+
+<!-- Hero Section -->
+<div class="hero-section position-relative" style="height: 420px;">
+    <video autoplay muted loop id="bg-video" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; z-index: 1;">
+        <source src="{% static 'videos/background.mp4' %}" type="video/mp4">
+    </video>
+    <div class="overlay position-absolute top-0 start-0 w-100 h-100" style="background: rgba(24,26,27,0.08); z-index: 2;"></div>
+    <div class="container h-100 d-flex flex-column justify-content-center align-items-center position-relative" style="z-index: 3;">
+        <div class="text-center">
+            <img src="{% static 'img/goruntu.png' %}" alt="gorsel" width="500" height="250" class="mb-3" style="background:transparent;">
+            <h1 class="display-3 fw-bold text-white mb-3">VERİNİZİ KEŞFEDİN</h1>
+            <p class="lead text-light mb-4">Yüklediğiniz verileri analiz ediyor, keşfetmenizi sağlıyoruz.</p>
+            <a href="{% url 'analyzer:register' %}" class="btn btn-info btn-lg px-5 shadow">Hemen Başla</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Tanıtım ve Özellikler Bölümü -->
+<section class="container glass-bg py-5">
+  <div class="row g-4">
+    <div class="col-12">
+      <div class="card glass-card p-4 mb-4 text-center">
+        <h2 class="fw-bold mb-3" style="color: #0dcaf0;"><i class="fas fa-chart-line me-2"></i>Data Insight'a Hoş Geldiniz!</h2>
+        <p class="lead mb-0">Data Insight, verilerinizin gizli potansiyelini keşfetmenize yardımcı olan güçlü ve kullanıcı dostu bir veri analiz platformudur. Verilerinizi kolayca yükleyin, analiz edin ve hızlıca anlamlı içgörülere dönüştürün!</p>
+      </div>
+    </div>
+
+    <!-- Neler Yapıyoruz? (Görsel solda, metin sağda) -->
+    <div class="col-12 mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center mb-3 mb-md-0">
+          <img src="{% static 'img/neler_yapıyoruz.jpg' %}" alt="Neler Yapıyoruz" class="img-fluid rounded shadow" style="max-height:320px; width:auto;">
+        </div>
+        <div class="col-md-6">
+          <div class="card glass-card h-100 p-4">
+            <h4 class="fw-bold mb-3" style="color: #38c6ff;"><i class="fas fa-bolt me-2"></i>Neler Yapıyoruz?</h4>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><i class="fas fa-broom text-info me-2"></i>Eksik verileri tespit edin ve temizleyin.</li>
+              <li class="mb-2"><i class="fas fa-chart-bar text-info me-2"></i>Grafikler ve görselleştirmelerle verilerinizi anlamlı hale getirin.</li>
+              <li class="mb-2"><i class="fas fa-robot text-info me-2"></i>Makine öğrenmesi modelleriyle tahmin ve sınıflandırma yapın.</li>
+              <li class="mb-2"><i class="fas fa-share-alt text-info me-2"></i>Analizlerinizi ister kişisel ister paylaşılabilir hale getirin.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bu Site Ne İşe Yarar? (Görsel sağda, metin solda) -->
+    <div class="col-12 mb-4">
+      <div class="row align-items-center flex-md-row-reverse">
+        <div class="col-md-6 text-center mb-3 mb-md-0">
+          <img src="{% static 'img/ne_ise_yarar.avif' %}" alt="Bu Site Ne İşe Yarar" class="img-fluid rounded shadow" style="max-height:320px; width:auto;">
+        </div>
+        <div class="col-md-6">
+          <div class="card glass-card h-100 p-4">
+            <h4 class="fw-bold mb-3" style="color: #38c6ff;"><i class="fas fa-question-circle me-2"></i>Bu Site Ne İşe Yarar?</h4>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><i class="fas fa-magic text-success me-2"></i><b>Verilerinizi Kolaylıkla Analiz Edin:</b> Teknik bilgiye gerek duymadan veri analizi yapmanızı sağlar.</li>
+              <li class="mb-2"><i class="fas fa-bolt text-success me-2"></i><b>Hızlı ve Anlaşılır Sonuçlar:</b> Verileriniz saniyeler içinde anlamlı sonuçlara dönüşür.</li>
+              <li class="mb-2"><i class="fas fa-chart-pie text-success me-2"></i><b>Görsel Raporlama:</b> Analiz sonuçlarını görselleştirin ve etkili raporlar oluşturun.</li>
+              <li class="mb-2"><i class="fas fa-lightbulb text-success me-2"></i><b>Tahminler Yapın:</b> Makine öğrenmesi ile geleceği tahmin edin veya verilerinizi sınıflandırın.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Neler Kullanıyoruz? (Görsel solda, metin sağda) -->
+    <div class="col-12 mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center mb-3 mb-md-0">
+          <img src="{% static 'img/neler_kullaniyoruz.png' %}" alt="Neler Kullanıyoruz" class="img-fluid rounded shadow" style="max-height:320px; width:auto;">
+        </div>
+        <div class="col-md-6">
+          <div class="card glass-card h-100 p-4">
+            <h4 class="fw-bold mb-3" style="color: #0dcaf0;"><i class="fas fa-cogs me-2"></i>Neler Kullanıyoruz?</h4>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><i class="fas fa-brain text-primary me-2"></i><b>Makine Öğrenmesi Algoritmaları:</b> Güçlü ve doğru tahminler için.</li>
+              <li class="mb-2"><i class="fas fa-filter text-primary me-2"></i><b>Veri Ön İşleme Teknikleri:</b> Temiz ve doğru analizler için.</li>
+              <li class="mb-2"><i class="fas fa-user-friends text-primary me-2"></i><b>Kullanıcı Deneyimi Odaklı Arayüz:</b> Herkesin kullanabileceği basit ve etkili bir arayüz için.</li>
+              <li class="mb-2"><i class="fas fa-share-square text-primary me-2"></i><b>Paylaşılan Analizler:</b> Analiz sonuçlarını kolayca paylaşabilmeniz için.</li>
+              <li class="mb-2"><i class="fas fa-chart-area text-primary me-2"></i><b>Görselleştirme Araçları:</b> Verilerinizi anlaşılır ve şık görsellerle ifade etmek için.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kimler İçin? (Görsel sağda, metin solda) -->
+    <div class="col-12 mb-4">
+      <div class="row align-items-center flex-md-row-reverse">
+        <div class="col-md-6 text-center mb-3 mb-md-0">
+          <img src="{% static 'img/kimler_icin.jpg' %}" alt="Kimler İçin" class="img-fluid rounded shadow" style="max-height:320px; width:auto;">
+        </div>
+        <div class="col-md-6">
+          <div class="card glass-card h-100 p-4">
+            <h4 class="fw-bold mb-3" style="color: #0dcaf0;"><i class="fas fa-users me-2"></i>Kimler İçin?</h4>
+            <p class="mb-0">Data Insight, veri analizi yapmaya yeni başlaya+nlar, öğrenciler, veri analizi profesyonelleri ve işletmeler için tasarlandı. Amacımız, herkesin verilerinden maksimum fayda sağlamasını mümkün kılmak.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hadi Başlayın (Görsel solda, metin sağda) -->
+    <div class="col-12 mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center mb-3 mb-md-0">
+          <img src="{% static 'img/hadi_baslayin.jpg' %}" alt="Hadi Başlayın" class="img-fluid rounded shadow" style="max-height:320px; width:auto;">
+        </div>
+        <div class="col-md-6">
+          <div class="card glass-card p-4 text-center mt-4">
+            <h4 class="fw-bold mb-3" style="color: #38c6ff;"><i class="fas fa-rocket me-2"></i>Hadi başlayın ve verilerinizin hikayesini keşfedin!</h4>
+            <a href="{% url 'analyzer:register' %}" class="btn btn-info btn-lg px-5 shadow">Hemen Başla</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Paylaşılan Analizler -->
+<a id="analizler"></a>
+<section class="container glass-bg py-5 fade-in-section">
+  <h2 class="fw-bold mb-4 section-title text-center" style="font-size:2.2rem; letter-spacing:1px;">
+    <i class="fas fa-share-alt me-2"></i>İlham Veren Paylaşımlar
+  </h2>
+  <div class="row justify-content-center g-4">
+    {% for analysis in shared_analyses %}
+      <div class="col-lg-4 col-md-6 col-12">
+        <a href="{% url 'analyzer:analysis_detail' analysis.id %}" style="text-decoration:none; display:block;">
+          <div style="background:#23272b; color:#e0f7ff; border-radius:1.2em; box-shadow:0 2px 12px #38c6ff22; margin-bottom:1.5rem; padding:1.5rem 2rem; transition:box-shadow 0.2s;">
+            <div style="font-size:1.3rem; font-weight:700; color:#38c6ff;">{{ analysis.title }}</div>
+            <div style="font-size:1.05rem; color:#b8eaff; margin-top:0.5rem;">{{ analysis.summary|default:"-"|truncatechars:120 }}</div>
+            <div style="font-size:0.98rem; color:#a5d9f3; margin-top:0.5rem;">Tarih: {{ analysis.created_at|date:"d.m.Y H:i" }}</div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info text-center">Henüz paylaşılan analiz yok.</div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if paginator.num_pages > 1 %}
+  <nav aria-label="Paylaşılan analizler sayfalandırma" class="mt-4 modern-pagination">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+        {% if page_obj.has_previous %}
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}#analizler" tabindex="-1">&laquo;</a>
+        {% else %}
+          <span class="page-link" tabindex="-1">&laquo;</span>
+        {% endif %}
+      </li>
+      {% for num in paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}#analizler">{{ num }}</a>
+        </li>
+      {% endfor %}
+      <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+        {% if page_obj.has_next %}
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}#analizler">&raquo;</a>
+        {% else %}
+          <span class="page-link">&raquo;</span>
+        {% endif %}
+      </li>
+    </ul>
+  </nav>
+  {% endif %}
+</section>
+
+<a id="faq"></a>
+{% include "analyzer/faq.html" %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.analysis-card-modern {
+  background: rgba(34, 40, 49, 0.92);
+  border-radius: 1.5em;
+  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+  border: 1.5px solid rgba(255,255,255,0.10);
+  transition: transform 0.22s cubic-bezier(.68,-0.55,.27,1.55), box-shadow 0.22s, border 0.18s;
+  position: relative;
+  overflow: hidden;
+}
+.analysis-card-modern:hover {
+  transform: scale(1.035) translateY(-6px);
+  box-shadow: 0 16px 48px #38c6ff33, 0 2px 16px #0002;
+  border: 2.5px solid #38c6ff55;
+}
+.btn-gradient {
+  background: linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #38c6ff33;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.btn-gradient:hover, .btn-gradient:focus {
+  background: linear-gradient(90deg, #38c6ff 0%, #4f8cff 100%);
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px #4f8cff33;
+}
+.analysis-card-modern,
+.analysis-card-modern .card-title,
+.analysis-card-modern .card-text,
+.analysis-card-modern .text-light,
+.analysis-card-modern a,
+.analysis-card-modern .badge,
+.analysis-card-modern .text-muted {
+  color: #e0f7ff !important;
+}
+
+.analysis-card-modern .card-link-custom {
+  color: #38c6ff !important;
+}
+.analysis-card-modern .card-link-custom:hover {
+  color: #a5d9f3 !important;
+}
+.analysis-card-modern .badge {
+  background: #a5d9f3 !important;
+  color: #181a1b !important;
+}
+.analysis-card-modern .card-body {
+  min-height: 120px;
+  padding: 2rem !important;
+  color: #fff !important;
+}
+/* Modern pagination */
+.modern-pagination .pagination {
+  background: rgba(34, 40, 49, 0.92);
+  border-radius: 1.5em;
+  box-shadow: 0 4px 24px rgba(56,198,255,0.10);
+  padding: 0.4em 1.2em;
+  display: inline-flex;
+}
+.modern-pagination .page-item {
+  margin: 0 0.13em;
+}
+.modern-pagination .page-link, .modern-pagination .page-link:focus {
+  border: none;
+  border-radius: 1em !important;
+  background: transparent;
+  color: #38c6ff;
+  font-weight: 600;
+  font-size: 1.18rem;
+  min-width: 2.3em;
+  min-height: 2.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  box-shadow: none;
+}
+.modern-pagination .page-link:hover {
+  background: #23272b;
+  color: #fff;
+  box-shadow: 0 2px 8px #38c6ff22;
+}
+.modern-pagination .page-item.active .page-link {
+  background: linear-gradient(90deg, #38c6ff 0%, #4f8cff 100%);
+  color: #fff !important;
+  box-shadow: 0 4px 16px #38c6ff33;
+  border: none;
+}
+.modern-pagination .page-item.disabled .page-link, .modern-pagination .page-item.disabled span.page-link {
+  color: #b8eaff !important;
+  background: #23272b;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.hash === '#analizler') {
+    var target = document.getElementById('analizler');
+    if (target) {
+      setTimeout(function() {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }, 100); // Sayfa tam yüklensin diye küçük bir gecikme
+    }
+  }
+});
+</script>
+{% endblock %}

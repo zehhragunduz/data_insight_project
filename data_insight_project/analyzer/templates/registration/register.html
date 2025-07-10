@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body {
+  background: #181a1b !important;
+  font-family: 'Inter', 'Montserrat', Arial, sans-serif !important;
+}
+.back-arrow-standalone {
+  display: flex;
+  align-items: center;
+  margin: 18px 0 0 0;
+  margin-left: 0;
+  width: fit-content;
+  cursor: pointer;
+  color: #0dcaf0;
+  font-size: 1.7rem;
+  transition: color 0.2s;
+  z-index: 10;
+}
+.back-arrow-standalone:hover {
+  color: #0099cc;
+}
+.form-container {
+  background: rgba(30, 34, 40, 0.92);
+  border-radius: 22px;
+  padding: 44px 38px 32px 38px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  max-width: 720px;
+  margin: 48px auto 0 auto;
+}
+@media (max-width: 700px) {
+  .form-container { padding: 18px 6px; }
+}
+.register-header h3 {
+  background: linear-gradient(90deg, #5fa8e6 0%, #3b5b7c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-weight: 700;
+  font-family: 'Montserrat', 'Inter', Arial, sans-serif;
+}
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+}
+.form-col {
+  flex: 1 1 45%;
+  min-width: 240px;
+}
+@media (max-width: 700px) {
+  .form-row { flex-direction: column; gap: 0; }
+  .form-col { min-width: 100%; }
+}
+button {
+  background-color: #00bfff;
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+button:hover {
+  background-color: #0099cc;
+}
+.errorlist {
+  color: #ff6b6b;
+  font-size: 0.97rem;
+  margin: 2px 0 8px 2px;
+  list-style: none;
+  padding: 0;
+  background: none;
+  border: none;
+}
+</style>
+{% endblock %}
+{% block content %}
+<span class="back-arrow-standalone" onclick="window.history.back()">
+  <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 22l-7-7 7-7" stroke="#0dcaf0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</span>
+<div class="form-container">
+  <div class="register-header">
+    <h3 class="fw-bold mb-0 ms-2">Kayıt Ol</h3>
+  </div>
+  <form method="post" autocomplete="off">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-col">
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Kullanıcı Adı</label>
+          {{ form.username|add_class:'form-control' }}
+          {{ form.username.errors }}
+        </div>
+        <div class="mb-3">
+          <label for="id_first_name" class="form-label">Ad</label>
+          {{ form.first_name|add_class:'form-control' }}
+          {{ form.first_name.errors }}
+        </div>
+        <div class="mb-3">
+          <label for="id_last_name" class="form-label">Soyad</label>
+          {{ form.last_name|add_class:'form-control' }}
+          {{ form.last_name.errors }}
+        </div>
+        <div class="mb-3">
+          <label for="id_birth_date" class="form-label">Doğum Tarihi</label>
+          {{ form.birth_date|add_class:'form-control' }}
+          {{ form.birth_date.errors }}
+        </div>
+      </div>
+      <div class="form-col">
+        <div class="mb-3 position-relative">
+          <label for="id_email" class="form-label">E-posta <span class="info-icon" data-bs-toggle="tooltip" data-bs-placement="right" title="Geçerli bir e-posta adresi giriniz."><i class="fa fa-info-circle"></i></span></label>
+          {{ form.email|add_class:'form-control' }}
+          {{ form.email.errors }}
+        </div>
+        <div class="mb-3">
+          <label for="id_gender" class="form-label">Cinsiyet</label>
+          {{ form.gender|add_class:'form-control' }}
+          {{ form.gender.errors }}
+        </div>
+        <div class="mb-3 position-relative">
+          <label for="id_password1" class="form-label">Parola <span class="info-icon" data-bs-toggle="tooltip" data-bs-placement="right" title="En az 8 karakter, harf ve rakam içermelidir."><i class="fa fa-info-circle"></i></span></label>
+          {{ form.password1|add_class:'form-control' }}
+          {{ form.password1.errors }}
+        </div>
+        <div class="mb-3">
+          <label for="id_password2" class="form-label">Parola (Tekrar)</label>
+          {{ form.password2|add_class:'form-control' }}
+          {{ form.password2.errors }}
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-gradient w-100 mt-3">Kayıt Ol</button>
+  </form>
+  <div class="text-center mt-3">
+    <span>Zaten hesabın var mı? <a href="{% url 'login' %}" style="color:#0dcaf0;">Giriş yap</a></span>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+{{ block.super }}
+<script>
+  // Bootstrap tooltipları etkinleştir
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+</script>
+{% endblock %}

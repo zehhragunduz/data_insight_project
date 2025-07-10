@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% load analyzer_filters %}
+<div class="container">
+    <!-- KAPAK FOTOĞRAFI BURAYA -->
+    {% if analysis.cover_image %}
+      <img src="{{ analysis.cover_image.url }}" alt="Kapak" class="img-fluid mb-3">
+    {% elif analysis.cover_plot_name and analysis.details.plots %}
+      <img src="data:image/png;base64,{{ analysis.details.plots|get_item:analysis.cover_plot_name }}" alt="Kapak" class="img-fluid mb-3">
+    {% else %}
+      <img src="{% static 'img/default_cover.png' %}" alt="Kapak" class="img-fluid mb-3">
+    {% endif %}
+    <h2>{{ analysis.title }}</h2>
+    <!-- ... -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-star"></i> Örnek Analizler</h2>
+        
+    </div>
+
+    {% if user.is_authenticated and user_favs %}
+        <div class="mb-4">
+            <h4><i class="fas fa-heart text-danger"></i> Favorilerim</h4>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for analysis in user_favs %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-shadow border-warning">
+                            <div class="card-body">
+                                <h5 class="card-title mb-2">
+                                    <a href="{% url 'analyzer:analysis_detail' analysis.id %}" class="text-decoration-none text-dark">
+                                        {{ analysis.title|default:"Başlık Yok" }}
+                                    </a>
+                                </h5>
+                                <h6 class="card-subtitle mb-2 text-muted" style="font-size:0.9em;">
+                                    <i class="fas fa-user"></i> {{ analysis.owner.username }}<br>
+                                    <i class="fas fa-calendar"></i> {{ analysis.created_at|date:'d.m.Y H:i' }}
+                                </h6>
+                                <!-- Avatar yerine -->
+                                <div class='avatar-circle'>{{ analysis.owner.username|first|upper }}</div>
+                                <span>{{ analysis.owner.username }}</span>
+                                <p class="card-text" style="min-height:40px;">
+                                    {{ analysis.summary|default:"Özet yok."|truncatechars:80 }}
+                                </p>
+                                {# Favorilerim kartı içinde alt bilgiler #}
+                                <div class="small mb-2">
+                                    {% if analysis.details.target_column %}
+                                        <span class="analysis-badge target"><i class="fas fa-bullseye"></i>Hedef: {{ analysis.details.target_column }}</span>
+                                    {% endif %}
+                                    {% if analysis.details.model_type %}
+                                        <span class="analysis-badge model"><i class="fas fa-cogs"></i>Model: {{ analysis.details.model_type }}</span>
+                                    {% endif %}
+                                    {% if analysis.details.short_summary %}
+                                        <span class="analysis-badge info"><i class="fas fa-info-circle"></i>{{ analysis.details.short_summary }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-globe"></i> Genel
+                                </span>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'analyzer:analysis_detail' analysis.id %}" class="btn btn-outline-info" title="Detayları Gör">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button onclick="toggleFavorite({{ analysis.id }})" id="fav-btn-{{ analysis.id }}" class="btn btn-outline-warning" title="Favorilerden Çıkar">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <h4 class="mt-4"><i class="fas fa-list"></i> Diğer Analizler</h4>
+    {% if other_analyses %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for analysis in other_analyses %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'analyzer:analysis_detail' analysis.id %}" class="text-decoration-none text-dark">
+                                    {{ analysis.title|default:"Başlık Yok" }}
+                                </a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted" style="font-size:0.9em;">
+                                <i class="fas fa-user"></i> {{ analysis.owner.username }}<br>
+                                <i class="fas fa-calendar"></i> {{ analysis.created_at|date:'d.m.Y H:i' }}
+                            </h6>
+                            <p class="card-text" style="min-height:40px;">
+                                {{ analysis.summary|default:"Özet yok."|truncatechars:80 }}
+                            </p>
+                            {# Diğer Analizler kartı içinde alt bilgiler #}
+                            <div class="small mb-2">
+                                {% if analysis.details.target_column %}
+                                    <span class="analysis-badge target"><i class="fas fa-bullseye"></i>Hedef: {{ analysis.details.target_column }}</span>
+                                {% endif %}
+                                {% if analysis.details.model_type %}
+                                    <span class="analysis-badge model"><i class="fas fa-cogs"></i>Model: {{ analysis.details.model_type }}</span>
+                                {% endif %}
+                                {% if analysis.details.short_summary %}
+                                    <span class="analysis-badge info"><i class="fas fa-info-circle"></i>{{ analysis.details.short_summary }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success">
+                                <i class="fas fa-globe"></i> Genel
+                            </span>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'analyzer:analysis_detail' analysis.id %}" class="btn btn-outline-info" title="Detayları Gör">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <button onclick="toggleFavorite({{ analysis.id }})" id="fav-btn-{{ analysis.id }}" class="btn btn-outline-warning" title="Favorile">
+                                        <i class="far fa-star"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">Henüz Public Analiz Yok</h4>
+            <p class="text-muted">Kullanıcılar henüz analizlerini paylaşmamış.</p>
+            <a href="{% url 'analyzer:upload' %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> İlk Analizini Yap
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+<script>
+function toggleFavorite(analysisId) {
+    const csrftoken = document.querySelector('[name=csrf-token]')
+        ? document.querySelector('[name=csrf-token]').content
+        : document.querySelector('input[name=csrfmiddlewaretoken]')
+            ? document.querySelector('input[name=csrfmiddlewaretoken]').value
+            : '';
+    
+    fetch("{% url 'analyzer:toggle_favorite' 0 %}".replace('0', analysisId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const btn = document.getElementById('fav-btn-' + analysisId);
+        const icon = btn.querySelector('i');
+        if (data.favorited) {
+            icon.className = 'fas fa-star';
+            btn.title = 'Favorilerden Çıkar';
+        } else {
+            icon.className = 'far fa-star';
+            btn.title = 'Favorile';
+        }
+        // Sayfayı yenile ki favorilerim bölümü güncellensin
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Favorileme hatası:', error);
+        alert('Favorileme işlemi başarısız oldu.');
+    });
+}
+</script>
+{% endif %}
+
+{% endblock %}
+
+<style>
+body {
+    min-height: 100vh;
+    background: #181c24;
+    position: relative;
+    overflow-x: hidden;
+}
+.animated-bg-blob {
+    position: fixed;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(60px);
+    opacity: 0.45;
+    animation-timing-function: ease-in-out;
+}
+.animated-bg-blob.blob1 {
+    top: -180px;
+    left: -180px;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle at 30% 30%, #6f42c1 60%, #23395d 100%);
+    animation: blobMove1 18s infinite alternate;
+}
+.animated-bg-blob.blob2 {
+    bottom: -160px;
+    right: -160px;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle at 70% 70%, #0d6efd 60%, #23395d 100%);
+    animation: blobMove2 22s infinite alternate;
+}
+@keyframes blobMove1 {
+    0% { transform: scale(1) translate(0,0); }
+    50% { transform: scale(1.15,0.95) translate(60px, 40px); }
+    100% { transform: scale(1.05,1.1) translate(30px, 80px); }
+}
+@keyframes blobMove2 {
+    0% { transform: scale(1) translate(0,0); }
+    50% { transform: scale(1.1,1.05) translate(-50px, -30px); }
+    100% { transform: scale(0.95,1.1) translate(-80px, -60px); }
+}
+/* Dalga SVG ve bar animasyonu */
+.wave-bg {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 180px;
+    z-index: 0;
+    pointer-events: none;
+}
+.data-bars-bg {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 180px;
+    z-index: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+}
+.data-bar {
+    width: 10px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, #6f42c1 0%, #0d6efd 100%);
+    opacity: 0.18;
+    animation: barMove 2.5s infinite alternate;
+}
+.data-bar.bar2 { animation-delay: 0.3s; }
+.data-bar.bar3 { animation-delay: 0.6s; }
+.data-bar.bar4 { animation-delay: 0.9s; }
+.data-bar.bar5 { animation-delay: 1.2s; }
+.data-bar.bar6 { animation-delay: 1.5s; }
+.data-bar.bar7 { animation-delay: 1.8s; }
+.data-bar.bar8 { animation-delay: 2.1s; }
+@keyframes barMove {
+    0% { height: 30px; }
+    20% { height: 80px; }
+    40% { height: 50px; }
+    60% { height: 120px; }
+    80% { height: 60px; }
+    100% { height: 100px; }
+}
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #23395d;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    border: 2px solid #23272b;
+    box-shadow: 0 1px 6px rgba(22,36,71,0.10);
+}
+</style>
+<div class="animated-bg-blob blob1"></div>
+<div class="animated-bg-blob blob2"></div>
+<!-- Hareketli Wave SVG -->
+<div class="wave-bg">
+  <svg viewBox="0 0 1440 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+    <path id="wavePath" fill="#23395d" fill-opacity="0.22">
+      <animate attributeName="d" dur="12s" repeatCount="indefinite"
+        values="M0,120 Q360,180 720,120 T1440,120 V180 H0Z;
+                M0,100 Q360,160 720,100 T1440,120 V180 H0Z;
+                M0,120 Q360,80 720,120 T1440,120 V180 H0Z;
+                M0,120 Q360,180 720,120 T1440,120 V180 H0Z"/>
+    </path>
+  </svg>
+</div>
+<!-- Hareketli Veri Çubukları -->
+<div class="data-bars-bg">
+  <div class="data-bar bar1"></div>
+  <div class="data-bar bar2"></div>
+  <div class="data-bar bar3"></div>
+  <div class="data-bar bar4"></div>
+  <div class="data-bar bar5"></div>
+  <div class="data-bar bar6"></div>
+  <div class="data-bar bar7"></div>
+  <div class="data-bar bar8"></div>
+</div>

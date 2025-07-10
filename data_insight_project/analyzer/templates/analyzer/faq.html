@@ -1,0 +1,131 @@
+<!-- templates/analyzer/faq.html -->
+<div class="accordion mt-5 modern-accordion" id="faqAccordion">
+  <h3 class="mb-3">Sıkça Sorulan Sorular (SSS)</h3>
+  <!-- Platformun Adımları -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-step">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-step">
+        <i class="fas fa-question-circle faq-icon"></i>
+        Platformda Hangi Adımlar Gerçekleşiyor?
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-step" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <ol>
+          <li><b>Veri Yükleme:</b> CSV dosyanızı yüklersiniz. Sistem dosya formatını ve içeriğini otomatik kontrol eder.</li>
+          <li><b>Ön İşleme:</b> Eksik veriler doldurulur, kategorik veriler dönüştürülür, sabit veya çok eksik sütunlar temizlenir.</li>
+          <li><b>Analiz:</b> Temel istatistikler, veri özeti, sütun analizleri ve veri tipi kontrolleri yapılır.</li>
+          <li><b>Modelleme:</b> Sınıflandırma veya regresyon modelleriyle makine öğrenimi uygulanır. Model seçimi ve parametre ayarları kullanıcıya bırakılır.</li>
+          <li><b>Görselleştirme:</b> Histogram, boxplot, korelasyon matrisi, bar chart, confusion matrix, ROC eğrisi, PCA, t-SNE, learning curve gibi grafikler otomatik oluşturulur.</li>
+          <li><b>Kayıt & Paylaşım:</b> Analizlerinizi kaydedebilir, başkalarıyla paylaşabilir veya PDF/CSV olarak indirebilirsiniz.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <!-- Kullanılan Modeller -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-models">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-models">
+        <i class="fas fa-lightbulb faq-icon"></i>
+        Kullanılan Makine Öğrenimi Modelleri Nelerdir?
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-models" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <ul>
+          <li><b>Sınıflandırma:</b> Lojistik Regresyon, Karar Ağacı, Random Forest, SVM, KNN, Naive Bayes, XGBoost, LightGBM</li>
+          <li><b>Regresyon:</b> Linear Regression, Ridge, Lasso, Karar Ağacı, Random Forest, SVM, KNN, XGBoost, LightGBM</li>
+        </ul>
+        <p>Model seçimi, veri tipine ve hedef sütunun yapısına göre otomatik veya manuel yapılabilir.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Kullanılan Metrikler -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-metrics">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-metrics">
+        <i class="fas fa-cogs faq-icon"></i>
+        Hesaplanan Metrikler Nelerdir?
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-metrics" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <ul>
+          <li><b>Sınıflandırma:</b> Doğruluk (Accuracy), F1-Score, Precision, Recall, ROC-AUC, Confusion Matrix, Classification Report</li>
+          <li><b>Regresyon:</b> RMSE, R2 Score, MAE, MAPE</li>
+        </ul>
+        <p>Her model türü için uygun metrikler otomatik olarak hesaplanır ve raporlanır.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Görselleştirme Türleri -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-visuals">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-visuals">
+        <i class="fas fa-chart-bar faq-icon"></i>
+        Hangi Görselleştirme Türleri Sunuluyor?
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-visuals" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <ul>
+          <li>Histogram (Sütunların dağılımı)</li>
+          <li>Boxplot (Aykırı değer ve dağılım analizi)</li>
+          <li>Korelasyon Matrisi (Sayılar arası ilişki)</li>
+          <li>Bar Chart (Kategorik değişken dağılımı)</li>
+          <li>Confusion Matrix (Sınıflandırma başarısı)</li>
+          <li>ROC Eğrisi (Sınıflandırma performansı)</li>
+          <li>PCA Scatter (Boyut indirgeme ile görselleştirme)</li>
+          <li>t-SNE Scatter (Yüksek boyutlu verinin 2D gösterimi)</li>
+          <li>Learning Curve (Modelin öğrenme başarısı)</li>
+        </ul>
+        <p>Grafiklerin üzerine tıklayarak büyütebilir ve indirebilirsiniz.</p>
+      </div>
+    </div>
+  </div>
+  <!-- SSS Örnekleri ve Cevapları -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-examples">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-examples">
+        <i class="fas fa-info-circle faq-icon"></i>
+        Sıkça Sorulan Sorular ve Cevapları 
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-examples" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <b>Soru:</b> Yüklediğim dosya neden kabul edilmiyor?<br>
+        <b>Cevap:</b> Sadece CSV formatındaki dosyalar desteklenmektedir. Dosyanızın uzantısını ve içeriğini kontrol edin.<br><br>
+        <b>Soru:</b> Analizimi nasıl kaydedebilirim?<br>
+        <b>Cevap:</b> Analiz tamamlandıktan sonra "Kaydet" butonuna tıklayarak başlık ve özet girip kaydedebilirsiniz.<br><br>
+        <b>Soru:</b> Model türünü nasıl seçmeliyim?<br>
+        <b>Cevap:</b> Hedef sütununuz kategorik ise sınıflandırma, sayısal ise regresyon modellerini tercih edebilirsiniz.<br><br>
+        <b>Soru:</b> Grafiklerimi nasıl indirebilirim?<br>
+        <b>Cevap:</b> Grafiklerin üzerine tıklayarak açılan pencerede "İndir" butonunu kullanabilirsiniz.<br><br>
+        <b>Soru:</b> Analizimi başkalarıyla nasıl paylaşabilirim?<br>
+        <b>Cevap:</b> Analizinizi "Genel" olarak kaydederseniz, diğer kullanıcılar da görebilir.<br><br>
+        <b>Soru:</b> Hata mesajı aldım, ne yapmalıyım?<br>
+        <b>Cevap:</b> Hata mesajını dikkatlice okuyun, genellikle eksik veri, yanlış dosya formatı veya model seçimiyle ilgilidir. Sorun devam ederse destek ekibiyle iletişime geçin.
+      </div>
+    </div>
+  </div>
+  <!-- Ekstra: Yardım ve Destek Bilgisi -->
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="faq-support">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-support">
+        <i class="fas fa-life-ring faq-icon"></i>
+        Yardım ve Destek
+        <span class="faq-arrow"><i class="fas fa-chevron-down"></i></span>
+      </button>
+    </h2>
+    <div id="collapse-support" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+      <div class="accordion-body">
+        <p>Ek sorularınız için <b>destek@data-insight.com</b> adresine e-posta gönderebilirsiniz.</p>
+      </div>
+    </div>
+  </div>
+</div>

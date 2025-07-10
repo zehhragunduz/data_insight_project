@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-edit"></i> Analizi Düzenle</h2>
+    </div>
+    
+    <h5 class="mb-0">{{ analysis.title }}</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Analiz Başlığı</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ analysis.title }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="summary" class="form-label">Kısa Özet</label>
+            <textarea class="form-control" id="summary" name="summary" rows="3" placeholder="Analiziniz hakkında kısa bir özet yazın...">{{ analysis.summary }}</textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Gizlilik Ayarı</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_public" id="private" value="false" {% if not analysis.is_public %}checked{% endif %}>
+                <label class="form-check-label" for="private">
+                    <strong>Özel (Private)</strong> - Sadece ben görebilirim
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_public" id="public" value="true" {% if analysis.is_public %}checked{% endif %}>
+                <label class="form-check-label" for="public">
+                    <strong>Genel (Public)</strong> - Herkes görebilir
+                </label>
+            </div>
+        </div>
+        
+        <!-- Public seçildiğinde görünecek seçenekler -->
+        <div id="publicOptions" style="display:{% if analysis.is_public %}block{% else %}none{% endif %};">
+            <h6 class="mb-0"><i class="fas fa-share-alt"></i> Hangi Kısımları Paylaşmak İstiyorsun?</h6>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_summary" id="share_summary" value="true" 
+                       {% if analysis.is_public and analysis.details.summary %}checked{% endif %}>
+                <label class="form-check-label" for="share_summary">
+                    <i class="fas fa-table"></i> Veri Özeti
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_plots" id="share_plots" value="true"
+                       {% if analysis.is_public and analysis.details.plots %}checked{% endif %}>
+                <label class="form-check-label" for="share_plots">
+                    <i class="fas fa-chart-bar"></i> Grafikler
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_metrics" id="share_metrics" value="true"
+                       {% if analysis.is_public and analysis.details.model_metrics %}checked{% endif %}>
+                <label class="form-check-label" for="share_metrics">
+                    <i class="fas fa-chart-line"></i> Model Metrikleri
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_preprocessing" id="share_preprocessing" value="true"
+                       {% if analysis.is_public and analysis.details.preprocessing_info %}checked{% endif %}>
+                <label class="form-check-label" for="share_preprocessing">
+                    <i class="fas fa-cogs"></i> Ön İşleme Detayları
+                </label>
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Değişiklikleri Kaydet
+            </button>
+            <a href="{% url 'analyzer:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> İptal
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('input[name="is_public"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const publicOptions = document.getElementById('publicOptions');
+        if (this.value === 'true') {
+            publicOptions.style.display = 'block';
+        } else {
+            publicOptions.style.display = 'none';
+        }
+    });
+});
+</script>
+{% include "analyzer/faq.html" %}
+{% endblock %}

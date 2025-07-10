@@ -1,0 +1,513 @@
+{% extends "base.html" %}
+{% load static %}
+{% block bg_video %}{% endblock %}
+{% block content %}
+
+<!-- Particles.js Arka Planı -->
+<div id="particles-js" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;"></div>
+
+<!-- Duyuru Kutusu -->
+<div class="alert alert-info mt-4" role="alert">
+  <i class="fas fa-bullhorn"></i> Yeni: Analizleri PDF olarak indirebilirsin!
+</div>
+
+<!-- Modern Hero Section -->
+<section class="hero-section d-flex flex-column align-items-center justify-content-center text-center">
+  <h1 class="display-4 fw-bold mb-3 hero-title">Verilerini <span class="text-gradient-hero">anlamlandır!</span></h1>
+  <p class="lead mb-4">Yapay zeka destekli analizlerle verilerinden içgörü çıkar.</p>
+  <div class="hero-buttons d-flex flex-column flex-md-row gap-3 justify-content-center mb-4">
+    <a href="{% url 'analyzer:upload' %}" class="btn btn-hero btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_1pxqjqps.json" background="transparent" speed="1" style="width: 52px; height: 52px;" loop autoplay></lottie-player>
+      <span>Veri Yükle ve Analiz Et</span>
+    </a>
+    <a href="{% url 'analyzer:my_analyses' %}" class="btn btn-hero-secondary btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_8wREpI.json" background="transparent" speed="1" style="width: 52px; height: 52px;" loop autoplay></lottie-player>
+      <span>Analizlerim</span>
+    </a>
+    <a href="{% url 'analyzer:public_analyses' %}" class="btn btn-hero-tertiary btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_2glqweqs.json" background="transparent" speed="1" style="width: 52px; height: 52px;" loop autoplay></lottie-player>
+      <span>Örnek Analizler</span>
+    </a>
+  </div>
+  <!-- Terminal Efekti -->
+  <div class="terminal-effect mt-3 mb-4">
+    <span id="terminal-text"></span>
+    <span class="terminal-cursor">|</span>
+  </div>
+</section>
+
+  <style>
+body {
+  background: linear-gradient(120deg, #181a1b 0%, #11131a 100%) !important;
+}
+.terminal-effect {
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  background: rgba(24,26,27,0.65);
+  color: #38c6ff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #38c6ff22;
+  font-size: 1.18rem;
+  display: inline-block;
+  margin: 0 auto;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 2;
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 1ch;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+#particles-js { z-index: 0; }
+.hero-section, .hero-section * { position: relative; z-index: 2; }
+
+.analysis-card-modern {
+  background: rgba(34, 40, 49, 0.72);
+  backdrop-filter: blur(10px) saturate(140%);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px 0 rgba(31,38,135,0.10);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.18s cubic-bezier(.68,-0.55,.27,1.55), box-shadow 0.18s, border 0.14s;
+  position: relative;
+  overflow: hidden;
+  padding: 1.2rem 1.1rem 0.7rem 1.1rem;
+}
+.analysis-card-modern:hover {
+  transform: scale(1.018) translateY(-3px);
+  box-shadow: 0 8px 32px #38c6ff22, 0 2px 8px #0001;
+  border: 1.5px solid #38c6ff22;
+}
+.analysis-card-modern .card-visual {
+  background: linear-gradient(135deg, #23272b 40%, #38c6ff 100%);
+  box-shadow: 0 2px 8px #38c6ff22;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #a5d9f3;
+  margin: 0.2rem auto 10px auto;
+}
+.analysis-card-modern .card-title a {
+  color: #e0f7ff !important;
+  font-weight: 600;
+  font-size: 1.08rem;
+  letter-spacing: 0.2px;
+}
+.analysis-card-modern .card-title a:hover {
+  color: #38c6ff !important;
+  text-decoration: underline;
+}
+.analysis-card-modern .card-date {
+  color: #b8eaff !important;
+  font-size: 0.98em;
+  font-weight: 400;
+}
+.analysis-card-modern .card-text {
+  color: #b8eaff !important;
+  font-size: 0.97em;
+  opacity: 0.85;
+}
+.analysis-card-modern .badge {
+  background: #23272b;
+  color: #a5d9f3;
+  font-size: 0.93em;
+  border-radius: 7px;
+  padding: 0.32em 0.7em;
+  font-weight: 500;
+  box-shadow: none;
+  border: 1px solid #38c6ff22;
+}
+.analysis-card-modern .card-footer {
+  border-top: none;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.7rem;
+  padding-bottom: 0.2rem;
+}
+.btn-modern {
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  background: rgba(56,198,255,0.08);
+  color: #a5d9f3;
+  border: none;
+  box-shadow: 0 2px 8px #38c6ff11;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.btn-modern-edit:hover {
+  background: #38c6ff;
+  color: #fff;
+  box-shadow: 0 4px 16px #38c6ff33;
+  transform: scale(1.08);
+}
+.btn-modern-delete:hover {
+  background: #dc3545;
+  color: #fff;
+  box-shadow: 0 4px 16px #dc354533;
+  transform: scale(1.08);
+}
+.btn-modern:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #38c6ff55;
+}
+/* Modern Silme Modalı */
+.delete-modal-glass {
+  background: rgba(34, 40, 49, 0.85);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-radius: 22px;
+  border: 1.5px solid rgba(255,255,255,0.10);
+  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+  color: #fff;
+  padding: 0;
+  overflow: hidden;
+}
+.delete-modal-glass .modal-header {
+  border-bottom: none;
+  background: transparent;
+  justify-content: center;
+  padding-top: 2rem;
+  padding-bottom: 0.5rem;
+}
+.delete-modal-glass .modal-title {
+  font-weight: 700;
+  color: #ffb3b3;
+  font-size: 1.3rem;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.delete-modal-glass .modal-body {
+  color: #fff;
+  font-size: 1.08rem;
+  text-align: center;
+  padding: 1.2rem 2rem 0.5rem 2rem;
+}
+.delete-modal-glass .modal-footer {
+  border-top: none;
+  background: transparent;
+  justify-content: center;
+  gap: 1.2rem;
+  padding-bottom: 2rem;
+}
+.btn-modal {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  border: none;
+  background: rgba(56,198,255,0.10);
+  color: #a5d9f3;
+  box-shadow: 0 2px 8px #38c6ff11;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+}
+.btn-modal-delete {
+  background: rgba(220, 53, 69, 0.12);
+  color: #ffb3b3;
+}
+.btn-modal-delete:hover {
+  background: #dc3545;
+  color: #fff;
+  box-shadow: 0 4px 16px #dc354533;
+  transform: scale(1.10);
+}
+.btn-modal-cancel {
+  background: rgba(56,198,255,0.10);
+  color: #a5d9f3;
+}
+.btn-modal-cancel:hover {
+  background: #38c6ff;
+  color: #fff;
+  box-shadow: 0 4px 16px #38c6ff33;
+  transform: scale(1.10);
+}
+.delete-modal-glass .btn-close {
+  filter: invert(1) grayscale(1);
+  opacity: 0.7;
+  margin-top: -1.5rem;
+  margin-right: -1.5rem;
+}
+.modern-accordion .accordion-item {
+  border: none;
+  margin-bottom: 0.7rem;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px #38c6ff11;
+  background: transparent;
+}
+.modern-accordion .accordion-button {
+  background: rgba(34, 40, 49, 0.82);
+  color: #e0f7ff;
+  font-weight: 600;
+  font-size: 1.08rem;
+  border: none;
+  border-radius: 14px;
+  box-shadow: none;
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  transition: background 0.22s, color 0.22s;
+  position: relative;
+}
+.modern-accordion .accordion-button .faq-icon {
+  color: #38c6ff;
+  font-size: 1.25em;
+  margin-right: 0.5em;
+}
+.modern-accordion .accordion-button .faq-arrow {
+  margin-left: auto;
+  transition: transform 0.32s cubic-bezier(.68,-0.55,.27,1.55);
+  color: #a5d9f3;
+  font-size: 1.1em;
+}
+.modern-accordion .accordion-button:not(.collapsed) .faq-arrow {
+  transform: rotate(180deg);
+  color: #38c6ff;
+}
+.modern-accordion .accordion-button:not(.collapsed) {
+  background: rgba(56,198,255,0.10);
+  color: #38c6ff;
+  box-shadow: 0 4px 16px #38c6ff22;
+}
+.modern-accordion .accordion-body {
+  background: none;
+}
+/* Dalga SVG ve bar animasyonu */
+.wave-bg {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 180px;
+    z-index: 0;
+    pointer-events: none;
+}
+.data-bars-bg {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 180px;
+    z-index: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+}
+.data-bar {
+    width: 10px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, #6f42c1 0%, #0d6efd 100%);
+    opacity: 0.18;
+    animation: barMove 2.5s infinite alternate;
+}
+.data-bar.bar2 { animation-delay: 0.3s; }
+.data-bar.bar3 { animation-delay: 0.6s; }
+.data-bar.bar4 { animation-delay: 0.9s; }
+.data-bar.bar5 { animation-delay: 1.2s; }
+.data-bar.bar6 { animation-delay: 1.5s; }
+.data-bar.bar7 { animation-delay: 1.8s; }
+.data-bar.bar8 { animation-delay: 2.1s; }
+@keyframes barMove {
+    0% { height: 30px; }
+    20% { height: 80px; }
+    40% { height: 50px; }
+    60% { height: 120px; }
+    80% { height: 60px; }
+    100% { height: 100px; }
+}
+</style>
+
+<h3 class="mt-5">Son Yaptığın Analizler</h3>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+  {% for analysis in user_analyses %}
+    <div class="col" id="analysis-card-{{ analysis.id }}">
+      <div class="card analysis-card-modern h-100">
+        <div class="card-visual">
+          <i class="fas {% cycle 'fa-brain' 'fa-chart-bar' 'fa-robot' 'fa-database' 'fa-chart-pie' %}"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title mb-2">
+            <a href="{% url 'analyzer:analysis_detail' analysis.id %}" class="text-decoration-none card-link-custom">
+              {{ analysis.title|default:"Başlık Yok" }}
+            </a>
+          </h5>
+          <h6 class="card-subtitle mb-2 card-date">
+            {{ analysis.created_at|date:'d.m.Y H:i' }}
+          </h6>
+          <p class="card-text">
+            {{ analysis.summary|default:"Özet yok."|truncatechars:80 }}
+          </p>
+        </div>
+        <div class="card-footer">
+          <span class="badge">{{ analysis.is_public|yesno:"Genel,Özel" }}</span>
+          <span>
+            <button class="btn btn-modern btn-modern-delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ analysis.id }}" title="Sil">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <a href="{% url 'analyzer:edit_analysis' analysis.id %}" class="btn btn-modern btn-modern-edit" title="Düzenle">
+              <i class="fas fa-edit"></i>
+            </a>
+          </span>
+        </div>
+      </div>
+      <!-- Modal burada -->
+      <div class="modal fade" id="deleteModal{{ analysis.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ analysis.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content delete-modal-glass">
+            <div class="modal-header border-0">
+              <h5 class="modal-title w-100 text-center" id="deleteModalLabel{{ analysis.id }}">
+                <i class="fas fa-exclamation-triangle me-2"></i> Analizi Sil
+              </h5>
+              <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+              <p>
+                <strong>{{ analysis.title }}</strong> adlı analizi silmek istediğine emin misin?<br>
+                <span style="color:#ffb3b3;font-size:0.98em;">Bu işlem geri alınamaz!</span>
+              </p>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-modal btn-modal-cancel" data-bs-dismiss="modal" title="Vazgeç">
+                <i class="fas fa-times"></i>
+              </button>
+              <button type="button" class="btn btn-modal btn-modal-delete" onclick="deleteAnalysis({{ analysis.id }})" title="Evet, Sil">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col">
+      <div class="alert alert-warning">Henüz hiç analiz yapmadın.</div>
+    </div>
+  {% endfor %}
+</div>
+<!-- Profil Modalı -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content profile-modern-glass">
+      <div class="modal-header border-0 flex-column align-items-center bg-transparent">
+        <div class="profile-avatar-wrapper mb-2">
+          <div class="avatar-circle profile-modern-avatar">{{ user.username|first|upper }}</div>
+        </div>
+        <h4 class="modal-title w-100 text-center fw-bold mb-1" id="profileModalLabel">{{ user.first_name }} {{ user.last_name }}</h4>
+        <span class="text-muted mb-2" style="font-size:1em;">@{{ user.username }}</span>
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="container-fluid px-0">
+          <div class="row gy-3 gx-4 align-items-center profile-info-grid">
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-envelope text-gradient"></i>
+                <span class="fw-semibold">Email:</span>
+                <span class="ms-1">{{ user.email }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-birthday-cake text-gradient"></i>
+                <span class="fw-semibold">Doğum Tarihi:</span>
+                <span class="ms-1">{{ user.userprofile.birth_date|date:'d.m.Y' }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-user text-gradient"></i>
+                <span class="fw-semibold">Ad:</span>
+                <span class="ms-1">{{ user.first_name }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-venus-mars text-gradient"></i>
+                <span class="fw-semibold">Cinsiyet:</span>
+                <span class="ms-1">{{ user.userprofile.get_gender_display }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-user text-gradient"></i>
+                <span class="fw-semibold">Soyad:</span>
+                <span class="ms-1">{{ user.last_name }}</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-clock text-gradient"></i>
+                <span class="fw-semibold">Son giriş zamanı:</span>
+                <span class="ms-1">{{ user.last_login|date:'d.m.Y H:i' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-between flex-wrap">
+        <a href="{% url 'analyzer:profile_edit' %}" class="btn btn-gradient px-4 mb-2 mb-md-0"><i class="fas fa-edit me-1"></i> Düzenle</a>
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "analyzer/faq.html" %}
+<script>
+function deleteAnalysis(analysisId) {
+    const csrftoken = document.querySelector('[name=csrf-token]')
+        ? document.querySelector('[name=csrf-token]').content
+        : document.querySelector('input[name=csrfmiddlewaretoken]')
+            ? document.querySelector('input[name=csrfmiddlewaretoken]').value
+            : '';
+    fetch("{% url 'analyzer:delete_analysis' 0 %}".replace('0', analysisId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrftoken,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            var modalElement = document.getElementById('deleteModal' + analysisId);
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                document.activeElement.blur(); // Odağı kaldır
+                modal.hide();
+            }
+            setTimeout(function() {
+                var card = document.getElementById('analysis-card-' + analysisId);
+                if (card) card.remove();
+            }, 300);
+        } else if (response.status === 404) {
+            alert("Analiz bulunamadı veya zaten silinmiş.");
+            var card = document.getElementById('analysis-card-' + analysisId);
+            if (card) card.remove();
+        } else {
+            alert("Silme işlemi başarısız oldu.");
+        }
+    });
+}
+</script>
+{% endblock %}

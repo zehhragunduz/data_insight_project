@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block bg_video %}{% endblock %}
+{% block title %}Dosya Yükle - Data Insight{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height:80vh;">
+  <div class="glass-card p-5 w-100" style="max-width:600px; background:rgba(34,40,49,0.92); border-radius:22px; box-shadow:0 8px 32px 0 rgba(31,38,135,0.18); border:1.5px solid rgba(56,198,255,0.10);">
+    <h2 class="fw-bold mb-4 text-center" style="color:#38c6ff;"><i class="fas fa-upload me-2"></i>CSV Dosyası Yükle</h2>
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_csv_file" class="form-label" style="color:#b8eaff; font-weight:600;">CSV Dosyası:</label>
+        {{ form.csv_file|as_crispy_field }}
+        <div class="form-text" style="color:#a5d9f3;">Lütfen analiz edilecek CSV dosyasını seçin</div>
+      </div>
+      <div id="selected-file-info" class="mt-2 mb-2" style="color:#38c6ff; font-weight:500;"></div>
+      <button type="submit" class="btn btn-info w-100 py-2 fw-bold" style="font-size:1.15rem; border-radius:10px;">Dosyayı Yükle</button>
+      <hr class="my-4" style="border-color:#232c3d;">
+      <h3 class="fw-bold mb-3 text-center" style="color:#38c6ff;"><i class="fas fa-database me-2"></i>Örnek Veri Setleri</h3>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:rgba(56,198,255,0.08); border:1.2px solid #38c6ff33;">
+            <h6 class="fw-bold mb-2" style="color:#38c6ff;">Sınıflandırma</h6>
+            <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700 mb-2" style="background:rgba(30,36,48,0.98); border-radius:8px; border:1.2px solid #38c6ff44;">
+              <input id="radio-3C" type="radio" name="example_dataset" value="3C.csv" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="radio-3C" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Örnek Sınıflandırma DATASET 1</label>
+            </div>
+            <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700" style="background:rgba(30,36,48,0.98); border-radius:8px; border:1.2px solid #38c6ff44;">
+              <input id="radio-4C" type="radio" name="example_dataset" value="4C.csv" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="radio-4C" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Örnek Sınıflandırma DATASET 2</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="p-3 rounded-3" style="background:rgba(108,99,255,0.08); border:1.2px solid #6c63ff33;">
+            <h6 class="fw-bold mb-2" style="color:#6c63ff;">Regresyon</h6>
+            <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700 mb-2" style="background:rgba(30,36,48,0.98); border-radius:8px; border:1.2px solid #6c63ff44;">
+              <input id="radio-1R" type="radio" name="example_dataset" value="1R.csv" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="radio-1R" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Örnek Regresyon DATASET 1</label>
+            </div>
+            <div class="flex items-center ps-4 border border-gray-200 rounded-sm dark:border-gray-700" style="background:rgba(30,36,48,0.98); border-radius:8px; border:1.2px solid #6c63ff44;">
+              <input id="radio-2R" type="radio" name="example_dataset" value="2R.csv" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="radio-2R" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Örnek Regresyon DATASET 2</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Radyo butonlarına tıklanınca dosya inputunu temizle
+    document.querySelectorAll('input[name="example_dataset"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const infoDiv = document.getElementById('selected-file-info');
+            if (infoDiv) {
+                infoDiv.innerText = "Seçilen dosya: " + this.value;
+            }
+            document.querySelector('input[type="file"]').value = "";
+        });
+    });
+    // Dosya seçilince örnek seçimini sıfırla
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const infoDiv = document.getElementById('selected-file-info');
+            if (infoDiv) {
+                infoDiv.innerText = "";
+            }
+            document.querySelectorAll('input[name="example_dataset"]').forEach(radio => {
+                radio.checked = false;
+            });
+        });
+    }
+});
+</script>

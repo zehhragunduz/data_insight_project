@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block bg_video %}{% endblock %}
+{% block title %}Veri Analizi - Data Insight{% endblock %}
+{% block content %}
+<style>
+  body {
+    background: none !important;
+  }
+  #lottie-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.28;
+  }
+  #lottie-bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10,18,32,0.68);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .modern-card, .desc-card, .row, .container, .col-md-10 {
+    position: relative;
+    z-index: 2;
+  }
+  .gradient-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #38c6ff 0%, #6c63ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 1.2rem;
+  }
+  .modern-card {
+    background: rgba(24, 31, 42, 0.82);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(56,198,255,0.10), 0 1.5px 8px #232c3d44;
+    padding: 2.2rem 2rem 2rem 2rem;
+    margin-bottom: 5.2rem;
+    color: #e0f7ff;
+    border: 1.5px solid #232c3d;
+  }
+  .modern-card .alert-info {
+    background: rgba(56,198,255,0.08);
+    color: #38c6ff;
+    border: none;
+    font-size: 1.08rem;
+    border-radius: 10px;
+  }
+  .modern-btn {
+    background: linear-gradient(90deg, #38c6ff 0%, #6c63ff 100%);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.7em 2.2em;
+    font-size: 1.13rem;
+    transition: background 0.3s, color 0.3s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px #38c6ff22;
+  }
+  .modern-btn:hover {
+    background: linear-gradient(90deg, #6c63ff 0%, #38c6ff 100%);
+    color: #fff;
+    box-shadow: 0 6px 24px #6c63ff33;
+  }
+  .desc-card {
+    background: rgba(44, 54, 74, 0.82);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #232c3d33;
+    padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+    color: #e0f7ff;
+    border: 1.2px solid #232c3d;
+    margin-top: 4.2rem;
+    margin-bottom: 2.8rem;
+  }
+  .desc-card h6 {
+    color: #38c6ff;
+    font-weight: 700;
+  }
+  .desc-card ul li strong {
+    color: #6c63ff;
+  }
+  .tooltip-custom {
+    position: relative;
+    cursor: pointer;
+    border-bottom: 1px dotted #38c6ff;
+  }
+  .tooltip-custom .tooltiptext {
+    visibility: hidden;
+    width: 180px;
+    background: #232c3d;
+    color: #e0f7ff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 0.7em 1em;
+    position: absolute;
+    z-index: 100;
+    bottom: 120%;
+    left: 50%;
+    margin-left: -90px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.98em;
+  }
+  .tooltip-custom:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  .modern-form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .modern-form-group label {
+    min-width: 180px;
+    font-weight: 500;
+    color: #a5d9f3;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .modern-form-group select {
+    background: #181f2a;
+    color: #e0f7ff;
+    border: 2px solid #38c6ff55;
+    border-radius: 10px;
+    padding: 0.7em 1.2em;
+    font-size: 1.08em;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px #38c6ff11;
+    appearance: none;
+  }
+  .modern-form-group select:focus {
+    border-color: #38c6ff;
+    box-shadow: 0 0 0 2px #38c6ff33;
+    outline: none;
+  }
+  .modern-form-group input[type="text"],
+  .modern-form-group input[type="number"] {
+    flex: 1 1 260px;
+    max-width: 350px;
+    min-width: 120px;
+    background: #232c3d;
+    color: #e0f7ff;
+    border: 1.5px solid #38c6ff55;
+    border-radius: 8px;
+    padding: 0.6em 1em;
+    font-size: 1.08em;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  .modern-form-group input:focus {
+    border-color: #38c6ff;
+    outline: none;
+    box-shadow: 0 0 0 2px #38c6ff33;
+  }
+  .modern-form-group .fa-question-circle {
+    color: #38c6ff;
+    font-size: 1.1em;
+    margin-left: 0.2em;
+    cursor: pointer;
+  }
+  .modern-form-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #38c6ff;
+    margin-right: 0.5em;
+  }
+  .form-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2.5rem;
+  }
+  @media (max-width: 900px) {
+    .form-grid-2col {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 700px) {
+    .modern-form-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+    .modern-form-group label {
+      min-width: unset;
+      margin-bottom: 0.2em;
+    }
+  }
+</style>
+
+<div id="lottie-bg">
+  <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" style="width: 100vw; height: 100vh;" loop autoplay></lottie-player>
+</div>
+<div id="lottie-bg-overlay"></div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+    <div class="modern-card">
+      <div class="gradient-title">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_2kscui.json" background="transparent" speed="1" style="width: 48px; height: 48px;" loop autoplay></lottie-player>
+        <span><i class="fas fa-chart-bar me-2"></i>Veri Analizi ve Ön İşleme</span>
+            </div>
+      <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+        <strong>{{ file_name }}</strong> dosyası yüklendi. <br>
+        <small class="text-muted">Satır sayısı: {{ row_count }} | Sütun sayısı: {{ column_count }}</small>
+                </div>
+                <form method="post" action="{% url 'analyzer:analyze' %}" id="analyze-form">
+                    {% csrf_token %}
+        <!-- Veri Ön İşleme Alanları -->
+        <h5 class="mb-3 mt-2">Veri Ön İşleme</h5>
+        <div class="form-grid-2col">
+          <div class="modern-form-group">
+            {{ preprocessing_form.fill_missing.label_tag }}
+            {{ preprocessing_form.fill_missing }}
+          </div>
+          <div class="modern-form-group">
+            {{ preprocessing_form.scaling_method.label_tag }}
+            {{ preprocessing_form.scaling_method }}
+          </div>
+          <div class="modern-form-group">
+            {{ preprocessing_form.encoding_method.label_tag }}
+            {{ preprocessing_form.encoding_method }}
+          </div>
+          <!-- Checkboxlar aynı satırda yan yana -->
+          <div class="modern-form-group" style="grid-column: span 2; display: flex; gap: 2.5rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5em;">
+              {{ preprocessing_form.remove_constant }}
+              {{ preprocessing_form.remove_constant.label|safe }}
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5em;">
+              {{ preprocessing_form.remove_high_missing }}
+              {{ preprocessing_form.remove_high_missing.label|safe }}
+            </label>
+          </div>
+        </div>
+        <!-- Model Eğitimi Alanları -->
+        <h5 class="mb-3 mt-4">Model Eğitimi</h5>
+        <div class="modern-form-group">
+          {{ preprocessing_form.train_model }}
+          {{ preprocessing_form.train_model.label|safe }}
+        </div>
+        <div id="model-options-row" class="form-grid-2col" style="display: none;">
+          <div class="modern-form-group">
+            {{ preprocessing_form.model_choice.label_tag }}
+            {{ preprocessing_form.model_choice }}
+          </div>
+          <div class="modern-form-group">
+            {{ preprocessing_form.target_column.label_tag }}
+            {{ preprocessing_form.target_column }}
+          </div>
+        </div>
+        <div class="modern-form-group dt-param" style="display: none;">
+          {{ preprocessing_form.dt_max_depth.label_tag }}
+          {{ preprocessing_form.dt_max_depth }}
+        </div>
+        <div class="modern-form-group rf-param" style="display: none;">
+          {{ preprocessing_form.rf_n_estimators.label_tag }}
+          {{ preprocessing_form.rf_n_estimators }}
+        </div>
+        <div class="modern-form-group reg-param" style="display: none;">
+          {{ preprocessing_form.reg_alpha.label_tag }}
+          {{ preprocessing_form.reg_alpha }}
+        </div>
+        <div class="modern-form-group knn-param" style="display: none;">
+          {{ preprocessing_form.knn_n_neighbors.label_tag }}
+          {{ preprocessing_form.knn_n_neighbors }}
+                    </div>
+        <button type="submit" class="modern-btn mt-3">Analizi Başlat</button>
+                </form>
+                <!-- Yükleniyor Overlay -->
+                <div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+                    <div class="text-center">
+                        <style>
+                        .graph-loader-bars {
+                          display: flex;
+                          justify-content: center;
+                          align-items: flex-end;
+                          height: 60px;
+                          gap: 6px;
+                          margin-top: 40px;
+                        }
+                        .graph-loader-bar {
+                          width: 12px;
+                          height: 20px;
+                          background: #38c6ff;
+                          border-radius: 6px 6px 0 0;
+                          animation: graphBarAnim 1s infinite alternate;
+                        }
+                        .graph-loader-bar:nth-child(2) { animation-delay: 0.2s; }
+                        .graph-loader-bar:nth-child(3) { animation-delay: 0.4s; }
+                        .graph-loader-bar:nth-child(4) { animation-delay: 0.6s; }
+                        .graph-loader-bar:nth-child(5) { animation-delay: 0.8s; }
+                        @keyframes graphBarAnim {
+                          0% { height: 20px; }
+                          50% { height: 55px; }
+                          100% { height: 20px; }
+                        }
+                        </style>
+                        <div class="graph-loader-bars">
+                          <div class="graph-loader-bar"></div>
+                          <div class="graph-loader-bar"></div>
+                          <div class="graph-loader-bar"></div>
+                          <div class="graph-loader-bar"></div>
+                          <div class="graph-loader-bar"></div>
+                        </div>
+                        <div class="mt-3 text-light fs-5">Analiz başlatılıyor, lütfen bekleyin...</div>
+                    </div>
+                </div>
+            </div>
+    <div class="desc-card">
+      <h4 class="mb-3"><i class="fas fa-info-circle me-2"></i>Analiz Seçenekleri Açıklaması</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Veri Ön İşleme</h6>
+                        <ul class="list-unstyled">
+            <li><strong>Eksik Veri Doldurma:</strong> <span class="tooltip-custom">Ortalama, medyan, mod, KNN veya satır silme<span class="tooltiptext">Eksik değerleri doldurma yöntemleri</span></span> seçenekleriyle eksik verileri doldurabilirsiniz.</li>
+                            <li><strong>Normalizasyon:</strong> Min-Max veya Z-score ile sayısal verileri ölçeklendirebilirsiniz.</li>
+                            <li><strong>Kategorik Dönüşüm:</strong> Label Encoding veya One-Hot Encoding ile kategorik verileri sayısal hale getirebilirsiniz.</li>
+                            <li><strong>Sabit Sütun Temizleme:</strong> Tüm değerleri aynı olan sütunlar otomatik olarak kaldırılır.</li>
+                            <li><strong>Yüksek Eksik Veri:</strong> %80'den fazla eksik veri içeren sütunlar kaldırılır.</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Model Eğitimi</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Model Seçimi:</strong> Lojistik Regresyon, Karar Ağacı, Random Forest, KNN, SVM, XGBoost, LightGBM ve daha fazlası.</li>
+                            <li><strong>Model Metrikleri:</strong> Accuracy, F1, ROC-AUC, RMSE, R2, MAE, MAPE ve daha fazlası.</li>
+                            <li><strong>Otomatik Grafikler:</strong> Confusion Matrix, ROC Curve, Feature Importance, PCA/t-SNE, Learning Curve ve daha fazlası.</li>
+                            <li><strong>Analiz Sonuçları:</strong> PDF raporu ve işlenmiş veri indirme imkanı.</li>
+                        </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modelChoice = document.getElementById('id_model_choice');
+        const trainModelCheckbox = document.getElementById('id_train_model');
+        const modelOptionsRow = document.getElementById('model-options-row');
+        const paramClassMap = {
+            'decision_tree': ['dt-param'],
+            'random_forest': ['rf-param'],
+            'ridge': ['reg-param'],
+            'lasso': ['reg-param'],
+            'logistic': ['reg-param'],
+            'knn': ['knn-param'],
+            // Diğer modeller için de ekleyebilirsin
+        };
+
+        function toggleModelParams() {
+            document.querySelectorAll('.dt-param, .rf-param, .reg-param, .knn-param').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            if (trainModelCheckbox && trainModelCheckbox.checked && modelChoice && modelChoice.value && paramClassMap[modelChoice.value]) {
+                paramClassMap[modelChoice.value].forEach(function(cls) {
+                    document.querySelectorAll('.' + cls).forEach(function(el) {
+                        el.style.display = '';
+                    });
+                });
+            }
+        }
+
+        function toggleModelOptionsRow() {
+            if (trainModelCheckbox && modelOptionsRow) {
+                if (trainModelCheckbox.checked) {
+                    modelOptionsRow.style.display = '';
+                } else {
+                    modelOptionsRow.style.display = 'none';
+                }
+            }
+            toggleModelParams(); // Model parametrelerini de güncelle
+        }
+
+        if (modelChoice) {
+            modelChoice.addEventListener('change', toggleModelParams);
+        }
+        if (trainModelCheckbox) {
+            trainModelCheckbox.addEventListener('change', toggleModelOptionsRow);
+            toggleModelOptionsRow();
+        }
+        // Bootstrap tooltipleri aktif et
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        // Yükleniyor overlay
+        var analyzeForm = document.getElementById('analyze-form');
+        var loadingOverlay = document.getElementById('loading-overlay');
+        if (analyzeForm && loadingOverlay) {
+            analyzeForm.addEventListener('submit', function(e) {
+                loadingOverlay.style.display = 'flex';
+            });
+        }
+        document.querySelectorAll('.choices-select').forEach(function(el) {
+            new Choices(el, { searchEnabled: false, itemSelectText: '' });
+        });
+    });
+</script>
+<div style="margin-top:2.8rem"></div>
+{% include "analyzer/faq.html" %}
+{% endblock %} 

@@ -1,0 +1,83 @@
+<!-- save_analysis.html -->
+{% extends "base.html" %}
+{% block content %}
+<button type="button" class="btn btn-secondary"
+        style="position: fixed; top: 20px; left: 20px; z-index: 9999;"
+        onclick="window.history.back();">
+    <i class="fas fa-arrow-left me-2"></i> Geri
+</button>
+<div class="container mt-4">
+    <h2>Analizi Kaydet</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="analysis_title" class="form-label">Analiz Başlığı</label>
+            <input type="text" class="form-control" id="analysis_title" name="analysis_title" required>
+        </div>
+        <!-- result.html veya save_analysis.html, formun içinde -->
+        <label>Kapak Fotoğrafı Seç:</label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        {% for plot_name, plot_data in plots.items %}
+            <label>
+            <input type="radio" name="cover_plot_name" value="{{ plot_name }}" required>
+            <img src="data:image/png;base64,{{ plot_data }}" style="width:80px; height:60px; border:2px solid #ccc; border-radius:6px;">
+            </label>
+        {% endfor %}
+        </div>
+        <label>Veya Kendi Kapak Fotoğrafını Yükle:</label>
+        <input type="file" name="cover_image" accept="image/*">
+        <div class="mb-3">
+            <label class="form-label">Gizlilik Ayarı</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_public" id="private" value="false" checked>
+                <label class="form-check-label" for="private">
+                    <strong>Özel (Private)</strong> - Sadece ben görebilirim
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="is_public" id="public" value="true">
+                <label class="form-check-label" for="public">
+                    <strong>Genel (Public)</strong> - Herkes görebilir
+                </label>
+            </div>
+        </div>
+        
+        <!-- Public seçildiğinde görünecek seçenekler -->
+        <div id="publicOptions" style="display:none;">
+            <h4>Hangi Kısımları Paylaşmak İstiyorsun?</h4>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_summary" id="share_summary" value="true" checked>
+                <label class="form-check-label" for="share_summary">Veri Özeti</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_plots" id="share_plots" value="true" checked>
+                <label class="form-check-label" for="share_plots">Grafikler</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_metrics" id="share_metrics" value="true" checked>
+                <label class="form-check-label" for="share_metrics">Model Metrikleri</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="share_preprocessing" id="share_preprocessing" value="true">
+                <label class="form-check-label" for="share_preprocessing">Ön İşleme Detayları</label>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Analizi Kaydet</button>
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('input[name="is_public"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const publicOptions = document.getElementById('publicOptions');
+        if (this.value === 'true') {
+            publicOptions.style.display = 'block';
+        } else {
+            publicOptions.style.display = 'none';
+        }
+    });
+});
+</script>
+{% include "analyzer/faq.html" %}
+{% endblock %}
