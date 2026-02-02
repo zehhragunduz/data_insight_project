@@ -1,7 +1,9 @@
-venv/
+# Django standart yasaklar
 *.pyc
-__pycache__/
-*.pyo
-*.pyd
-*.db
-*.sqlite3
+*~
+__pycache__
+db.sqlite3
+/media
+/staticfiles
+.env
+.DS_Store
